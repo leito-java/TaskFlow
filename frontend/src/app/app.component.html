@@ -1,0 +1,33 @@
+<div class="app-shell">
+  <!-- Cette barre est commune à toutes les pages de l'application. -->
+  <header class="topbar">
+    <a class="brand" routerLink="/" aria-label="Accueil TaskFlow">
+      <span class="brand-mark" aria-hidden="true">✓</span>
+      <span>
+        <strong>TaskFlow</strong>
+        <small>Vos priorités, simplement</small>
+      </span>
+    </a>
+
+    <!-- routerLink navigue sans recharger la page ; routerLinkActive signale le lien courant. -->
+    <nav aria-label="Navigation principale">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Accueil</a>
+      <a routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">
+        Tâches <span class="nav-count">{{ taskCount() }}</span>
+      </a>
+      <a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">À propos</a>
+    </nav>
+
+    <a class="new-task-link" routerLink="/tasks/new">Nouvelle tâche <span aria-hidden="true">＋</span></a>
+  </header>
+
+  <!-- Angular remplace le contenu de router-outlet selon l'URL active. -->
+  <main class="route-container">
+    <router-outlet />
+  </main>
+
+  <footer>
+    <span>TaskFlow · Organisez. Priorisez. Avancez.</span>
+    <span>Vos tâches restent disponibles d’une session à l’autre.</span>
+  </footer>
+</div>

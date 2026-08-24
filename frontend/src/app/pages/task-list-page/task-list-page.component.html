@@ -1,0 +1,46 @@
+<section class="tasks-page">
+  <header class="page-heading">
+    <div>
+      <p>Votre espace de travail</p>
+      <h1>Mes tâches</h1>
+      <span>Filtrez, terminez ou modifiez votre travail depuis une page dédiée.</span>
+    </div>
+    <a routerLink="/tasks/new"><span aria-hidden="true">＋</span> Ajouter une tâche</a>
+  </header>
+
+  <section class="task-summary" aria-label="Résumé">
+    <span><strong>{{ store.taskCount() }}</strong> au total</span>
+    <span><strong>{{ store.todoTaskCount() }}</strong> à faire</span>
+    <span><strong>{{ store.inProgressTaskCount() }}</strong> en cours</span>
+    <span><strong>{{ store.completedTaskCount() }}</strong> terminées</span>
+  </section>
+
+  <section class="tasks-panel" aria-label="Liste des tâches">
+    <div class="panel-heading">
+      <div>
+        <p>Votre progression</p>
+        <h2>Liste des tâches</h2>
+      </div>
+      <span class="result-count">{{ filteredTasks().length }} résultat(s)</span>
+    </div>
+
+    @if (store.error()) {
+      <div class="api-message error-message" role="alert">
+        <span>{{ store.error() }}</span>
+        <button type="button" (click)="store.loadTasks()">Réessayer</button>
+      </div>
+    }
+
+    @if (store.loading()) {
+      <div class="api-message loading-message" role="status">Chargement des tâches depuis l'API…</div>
+    } @else {
+      <app-task-filter [activeFilter]="currentFilter()" (filterChanged)="currentFilter.set($event)" />
+      <app-task-list
+        [tasks]="filteredTasks()"
+        (toggled)="store.toggleTask($event)"
+        (deleted)="store.deleteTask($event)"
+        (editRequested)="editTask($event)"
+      />
+    }
+  </section>
+</section>

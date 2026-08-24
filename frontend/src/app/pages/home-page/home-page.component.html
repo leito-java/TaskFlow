@@ -1,0 +1,42 @@
+<section class="home-page">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Votre espace de productivité</p>
+      <h1>Organisez votre journée,<br><span>une tâche à la fois.</span></h1>
+      <p class="description">
+        Centralisez vos priorités, suivez leur avancement et concentrez-vous
+        sur les prochaines actions importantes.
+      </p>
+      <div class="hero-actions">
+        <a class="primary-link" routerLink="/tasks">Voir mes tâches <span aria-hidden="true">→</span></a>
+        <a class="secondary-link" routerLink="/tasks/new">Créer une tâche</a>
+      </div>
+    </div>
+
+    <aside class="progress-card">
+      <span class="progress-label">Vue rapide</span>
+      <p>Progression actuelle</p>
+      <h2>{{ store.completedTaskCount() }} sur {{ store.taskCount() }} terminées</h2>
+      <ul>
+        <li><span>○</span> {{ store.todoTaskCount() }} à faire</li>
+        <li><span>→</span> {{ store.inProgressTaskCount() }} en cours</li>
+        <li><span>✓</span> {{ store.completedTaskCount() }} terminées</li>
+      </ul>
+    </aside>
+  </div>
+
+  <section class="stats" aria-label="Résumé des tâches">
+    <article>
+      <span class="stat-icon total" aria-hidden="true">▦</span>
+      <span><strong>{{ store.taskCount() }}</strong><small>Au total</small></span>
+    </article>
+    <article>
+      <span class="stat-icon remaining" aria-hidden="true">○</span>
+      <span><strong>{{ store.remainingTaskCount() }}</strong><small>Restantes</small></span>
+    </article>
+    <article>
+      <span class="stat-icon completed" aria-hidden="true">✓</span>
+      <span><strong>{{ store.completedTaskCount() }}</strong><small>Terminées</small></span>
+    </article>
+  </section>
+</section>

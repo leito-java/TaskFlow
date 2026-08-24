@@ -1,0 +1,19 @@
+:host { display: block; }
+
+.form-page { width: min(680px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 68px; }
+.back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 32px; color: #6b5dd5; font-size: .78rem; font-weight: 740; text-decoration: none; }
+header { margin-bottom: 24px; }
+header p, .not-found-card p { margin: 0 0 8px; color: #6d5ce7; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+header h1, .not-found-card h1 { margin: 0; color: #172033; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.08; letter-spacing: -.05em; }
+header > span { display: block; max-width: 570px; margin-top: 13px; color: #7a8496; font-size: .88rem; line-height: 1.7; }
+.form-card { padding: 34px; border: 1px solid rgb(226 232 240 / 85%); border-radius: 26px; background: linear-gradient(155deg, rgb(246 244 255 / 92%), rgb(255 255 255 / 82%)); box-shadow: 0 28px 70px rgb(38 32 78 / 11%); }
+.status-card { padding: 30px; border: 1px solid #e4e1f0; border-radius: 22px; background: #f5f3ff; color: #6253cf; text-align: center; }
+.save-error { margin: 0 0 20px; padding: 13px 15px; border: 1px solid #fecaca; border-radius: 11px; background: #fff1f2; color: #9f1239; font-size: .8rem; line-height: 1.5; }
+.not-found-card { display: grid; justify-items: start; padding: 42px; border: 1px solid #e4e1f0; border-radius: 26px; background: rgb(255 255 255 / 78%); box-shadow: 0 28px 70px rgb(38 32 78 / 9%); }
+.not-found-card > span { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 26px; border-radius: 16px; background: #efedff; color: #6455d9; font-size: 1.35rem; font-weight: 850; }
+.not-found-card a { display: inline-flex; margin-top: 25px; padding: 12px 16px; border-radius: 11px; background: #6253cf; color: #fff; font-size: .78rem; font-weight: 750; text-decoration: none; }
+
+@media (max-width: 560px) {
+  .form-page { width: min(100% - 24px, 680px); }
+  .form-card, .not-found-card { padding: 26px 20px; }
+}

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: ${POSTGRES_TEST_URL}
+    username: ${POSTGRES_TEST_USERNAME:taskflow}
+    password: ${POSTGRES_TEST_PASSWORD:taskflow_test}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:4200

@@ -1,0 +1,14 @@
+<nav aria-label="Filtrer les tâches">
+  <button type="button" [class.active]="activeFilter() === 'all'" [attr.aria-pressed]="activeFilter() === 'all'" (click)="filterChanged.emit('all')">
+    Toutes
+  </button>
+  <button type="button" [class.active]="activeFilter() === 'todo'" [attr.aria-pressed]="activeFilter() === 'todo'" (click)="filterChanged.emit('todo')">
+    À faire
+  </button>
+  <button type="button" [class.active]="activeFilter() === 'in-progress'" [attr.aria-pressed]="activeFilter() === 'in-progress'" (click)="filterChanged.emit('in-progress')">
+    En cours
+  </button>
+  <button type="button" [class.active]="activeFilter() === 'done'" [attr.aria-pressed]="activeFilter() === 'done'" (click)="filterChanged.emit('done')">
+    Terminées
+  </button>
+</nav>

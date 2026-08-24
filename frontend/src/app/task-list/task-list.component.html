@@ -1,0 +1,16 @@
+<ul>
+  <!-- @for répète le contenu ; track évite des mises à jour DOM inutiles. -->
+  @for (task of tasks(); track task.id) {
+    <li>
+      <!-- Les actions reçues de TaskItem sont retransmises au composant parent. -->
+      <app-task-item [task]="task" (toggled)="toggled.emit($event)" (deleted)="deleted.emit($event)" (editRequested)="editRequested.emit($event)" />
+    </li>
+  } @empty {
+    <!-- @empty est rendu quand la liste ne contient aucune tâche. -->
+    <li class="empty-state">
+      <span aria-hidden="true">✓</span>
+      <strong>Aucune tâche ici</strong>
+      <p>Ajoutez une tâche ou choisissez un autre filtre.</p>
+    </li>
+  }
+</ul>

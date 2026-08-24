@@ -1,0 +1,22 @@
+# Dépendances et builds Angular
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/out-tsc/
+
+# Build Maven
+backend/target/
+
+# Configuration locale et secrets
+.env
+frontend/.env
+backend/.env
+
+# Éditeurs et système
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

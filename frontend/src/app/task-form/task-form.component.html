@@ -1,0 +1,73 @@
+<!-- Relie le formulaire HTML au FormGroup TypeScript et intercepte sa soumission. -->
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-heading">
+    <span class="form-icon" aria-hidden="true">+</span>
+    <div>
+      <p>{{ task() ? 'Mode édition' : 'Planifier' }}</p>
+      <!-- Le titre change selon le mode création ou modification. -->
+      <h2>{{ task() ? 'Modifier la tâche' : 'Nouvelle tâche' }}</h2>
+    </div>
+  </div>
+
+  <!-- formControlName relie cet input au contrôle title. -->
+  <div class="field-group">
+    <label for="task">Titre de la tâche</label>
+    <input id="task" type="text" formControlName="title" placeholder="Ex. Étudier les composants" aria-describedby="title-error">
+    <!-- Ce bloc apparaît seulement lorsque la fonction autorise l'affichage de l'erreur. -->
+    @if (shouldShowError('title')) {
+      <p id="title-error" class="error">
+        @if (form.controls.title.hasError('required')) { Le titre est obligatoire. }
+        @if (form.controls.title.hasError('minlength')) { Le titre doit contenir au moins 3 caractères. }
+        @if (form.controls.title.hasError('maxlength')) { Le titre ne doit pas dépasser 120 caractères. }
+      </p>
+    }
+  </div>
+
+  <div class="field-group">
+    <label for="description">Description <span>(facultative)</span></label>
+    <textarea
+      id="description"
+      formControlName="description"
+      rows="4"
+      placeholder="Ajoutez le contexte ou les étapes importantes"
+      aria-describedby="description-error"></textarea>
+    @if (shouldShowError('description')) {
+      <p id="description-error" class="error">La description ne doit pas dépasser 1000 caractères.</p>
+    }
+  </div>
+
+  <div class="field-row">
+    <!-- Ces selects partagent les mêmes valeurs que les enums de l'API Java. -->
+    <div class="field-group">
+      <label for="priority">Niveau de priorité</label>
+      <select id="priority" formControlName="priority">
+        <option value="low">Basse</option>
+        <option value="medium">Moyenne</option>
+        <option value="high">Haute</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label for="status">Statut</label>
+      <select id="status" formControlName="status">
+        <option value="todo">À faire</option>
+        <option value="in-progress">En cours</option>
+        <option value="done">Terminée</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field-group">
+    <label for="due-date">Date limite <span>(facultative)</span></label>
+    <input id="due-date" type="date" formControlName="dueDate">
+  </div>
+
+  <!-- Le bouton principal reste désactivé tant que le formulaire est invalide. -->
+  <div class="actions">
+    <button class="primary-button" type="submit" [disabled]="form.invalid || busy()">
+      {{ busy() ? 'Enregistrement…' : (task() ? 'Enregistrer' : 'Ajouter la tâche') }}
+      <span aria-hidden="true">→</span>
+    </button>
+    @if (task()) { <button class="secondary-button" type="button" (click)="cancel()">Annuler</button> }
+  </div>
+</form>

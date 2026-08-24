@@ -1,0 +1,27 @@
+:host { display: block; }
+
+.tasks-page { width: min(980px, calc(100% - 40px)); margin: 0 auto; padding: 54px 0 64px; }
+.page-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; }
+.page-heading p, .panel-heading p { margin: 0 0 7px; color: #6d5ce7; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.page-heading h1 { margin: 0; color: #172033; font-size: clamp(2.25rem, 5vw, 3.6rem); letter-spacing: -.055em; }
+.page-heading div > span { display: block; margin-top: 11px; color: #7a8496; font-size: .9rem; }
+.page-heading a { display: inline-flex; flex: none; align-items: center; gap: 9px; min-height: 44px; padding: 0 16px; border-radius: 12px; background: linear-gradient(135deg, #7564e8, #5948d2); box-shadow: 0 12px 24px rgb(89 72 210 / 20%); color: #fff; font-size: .78rem; font-weight: 760; text-decoration: none; }
+
+.task-summary { display: flex; flex-wrap: wrap; gap: 9px; margin: 28px 0 16px; }
+.task-summary span { padding: 7px 11px; border: 1px solid #e5e3ef; border-radius: 999px; background: rgb(255 255 255 / 58%); color: #8992a3; font-size: .7rem; }
+.task-summary strong { color: #5f50d4; }
+
+.tasks-panel { padding: 34px; border: 1px solid rgb(226 232 240 / 85%); border-radius: 26px; background: rgb(255 255 255 / 82%); box-shadow: 0 28px 70px rgb(38 32 78 / 10%); backdrop-filter: blur(18px); }
+.panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 24px; }
+.panel-heading h2 { margin: 0; color: #172033; font-size: 1.55rem; letter-spacing: -.035em; }
+.result-count { flex: none; padding: 7px 11px; border-radius: 999px; background: #f1efff; color: #6455d9; font-size: .73rem; font-weight: 750; }
+.api-message { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 24px; padding: 15px 17px; border-radius: 13px; font-size: .8rem; line-height: 1.5; }
+.loading-message { justify-content: center; background: #f5f3ff; color: #6253cf; }
+.error-message { border: 1px solid #fecaca; background: #fff1f2; color: #9f1239; }
+.error-message button { flex: none; padding: 8px 11px; border: 0; border-radius: 9px; background: #9f1239; color: #fff; cursor: pointer; font: inherit; font-weight: 750; }
+
+@media (max-width: 620px) {
+  .tasks-page { width: min(100% - 24px, 980px); padding-top: 38px; }
+  .page-heading { align-items: flex-start; flex-direction: column; }
+  .tasks-panel { padding: 24px 18px; }
+}

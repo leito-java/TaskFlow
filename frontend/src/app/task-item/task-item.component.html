@@ -1,0 +1,50 @@
+<!-- Le statut pilote l'apparence ; completed reste une compatibilité de l'API. -->
+<article [class.completed]="task().status === 'done'" [class.in-progress]="task().status === 'in-progress'">
+  <label class="task-main">
+    <input
+      class="task-checkbox"
+      type="checkbox"
+      [checked]="task().status === 'done'"
+      [attr.aria-label]="task().status === 'done' ? 'Replacer la tâche à faire' : 'Marquer la tâche comme terminée'"
+      (change)="toggled.emit(task().id)">
+    <!-- Les doubles accolades affichent les valeurs de la tâche. -->
+    <span class="task-copy">
+      <strong>{{ task().title }}</strong>
+      @if (task().description) {
+        <span class="task-description">{{ task().description }}</span>
+      }
+      <span class="task-metadata">
+        <span
+          class="status"
+          [class.status-todo]="task().status === 'todo'"
+          [class.status-progress]="task().status === 'in-progress'"
+          [class.status-done]="task().status === 'done'">
+          @switch (task().status) {
+            @case ('todo') { À faire }
+            @case ('in-progress') { En cours }
+            @case ('done') { Terminée }
+          }
+        </span>
+        <span
+          class="priority"
+          [class.priority-low]="task().priority === 'low'"
+          [class.priority-medium]="task().priority === 'medium'"
+          [class.priority-high]="task().priority === 'high'">
+          @switch (task().priority) {
+            @case ('low') { Priorité basse }
+            @case ('medium') { Priorité moyenne }
+            @case ('high') { Priorité haute }
+          }
+        </span>
+        @if (task().dueDate) {
+          <time class="due-date" [attr.datetime]="task().dueDate">Échéance {{ task().dueDate }}</time>
+        }
+      </span>
+    </span>
+  </label>
+  <span class="item-actions">
+    <!-- Les boutons émettent une intention ; la page délègue ensuite l'action au store. -->
+    <button class="edit-button" type="button" (click)="editRequested.emit(task().id)">Modifier</button>
+    <button class="delete-button" type="button" (click)="deleted.emit(task().id)">Supprimer</button>
+  </span>
+</article>

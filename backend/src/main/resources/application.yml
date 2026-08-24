@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: taskflow-api
+  profiles:
+    default: dev
+  jpa:
+    hibernate:
+      # Hibernate contrôle le schéma, mais seul Flyway a le droit de le modifier.
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,0 +1,134 @@
+form { display: grid; gap: 22px; }
+
+.form-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 4px;
+}
+
+.form-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #6d5ce7;
+  box-shadow: 0 10px 22px rgb(109 92 231 / 22%);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.form-heading p {
+  margin: 0 0 2px;
+  color: #8275dd;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 1.3rem;
+  letter-spacing: -.025em;
+}
+
+.field-group { display: grid; gap: 8px; }
+.field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+label {
+  color: #475467;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+label span { color: #98a2b3; font-weight: 550; }
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #dfe3eb;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 88%);
+  color: #172033;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+textarea {
+  min-height: 108px;
+  padding: 13px 14px;
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder { color: #a0a8b7; }
+
+input:hover,
+select:hover,
+textarea:hover { border-color: #c8c3ee; }
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #7c6ee6;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgb(109 92 231 / 10%);
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+button {
+  min-height: 46px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: .84rem;
+  font-weight: 750;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #7564e8, #5948d2);
+  box-shadow: 0 12px 24px rgb(89 72 210 / 20%);
+  color: #fff;
+}
+
+.primary-button:not(:disabled):hover {
+  box-shadow: 0 15px 28px rgb(89 72 210 / 27%);
+  transform: translateY(-1px);
+}
+
+.secondary-button { background: #ebe9f7; color: #594e99; }
+
+button:disabled {
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: .46;
+}
+
+.error {
+  margin: 0;
+  color: #c2415b;
+  font-size: .76rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 560px) {
+  .field-row { grid-template-columns: 1fr; }
+}
