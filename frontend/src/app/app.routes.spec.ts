@@ -9,6 +9,7 @@ import { TaskFormPageComponent } from './pages/task-form-page/task-form-page.com
 import { TaskListPageComponent } from './pages/task-list-page/task-list-page.component';
 import { TaskApiService, TaskUpdate } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
+import { AuthService } from './auth.service';
 
 class FakeTaskApiService {
   private readonly tasks: Task[] = [
@@ -48,6 +49,7 @@ describe('routes', () => {
       providers: [
         provideRouter(routes),
         { provide: TaskApiService, useClass: FakeTaskApiService },
+        { provide: AuthService, useValue: { isAuthenticated: () => true } },
       ],
     });
   });

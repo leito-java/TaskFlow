@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
+import { AuthService } from './auth.service';
+import { TaskStore } from './task.store';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -9,7 +11,11 @@ describe('AppComponent', () => {
     // Le composant racine utilise le routeur : le test lui fournit une configuration vide.
     TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: { isAuthenticated: () => true, logout: () => undefined } },
+        { provide: TaskStore, useValue: { taskCount: () => 0 } },
+      ],
     });
     fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();

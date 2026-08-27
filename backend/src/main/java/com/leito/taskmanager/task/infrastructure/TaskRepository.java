@@ -8,5 +8,7 @@ import java.util.List;
 /** Spring Data génère l'implémentation de cet accès aux données. */
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findAllByOrderByIdAsc();
+    List<Task> findAllByOwnerEmailOrderByIdAsc(String email);
+
+    java.util.Optional<Task> findByIdAndOwnerEmail(Long id, String email);
 }

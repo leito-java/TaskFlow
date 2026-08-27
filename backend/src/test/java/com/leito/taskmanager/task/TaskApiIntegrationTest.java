@@ -3,6 +3,9 @@ package com.leito.taskmanager.task;
 import com.leito.taskmanager.task.domain.Task;
 import com.leito.taskmanager.task.domain.TaskPriority;
 import com.leito.taskmanager.task.infrastructure.TaskRepository;
+import com.leito.taskmanager.user.domain.User;
+import com.leito.taskmanager.user.infrastructure.UserRepository;
+import com.leito.taskmanager.auth.application.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,14 +36,22 @@ class TaskApiIntegrationTest {
     @Autowired
     private TaskRepository repository;
 
+    @Autowired private UserRepository userRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private JwtService jwtService;
+    private User owner;
+
     @BeforeEach
     void cleanDatabase() {
         repository.deleteAll();
+        userRepository.deleteAll();
+        owner = userRepository.save(new User("test@taskflow.local", passwordEncoder.encode("password-test")));
     }
 
     @Test
     void createThenReadDetailedTask() throws Exception {
         mockMvc.perform(post("/api/tasks")
+                        .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -56,7 +69,7 @@ class TaskApiIntegrationTest {
 
         long id = repository.findAll().get(0).getId();
 
-        mockMvc.perform(get("/api/tasks/{id}", id))
+        mockMvc.perform(get("/api/tasks/{id}", id).with(authenticated()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Connecter Angular"))
                 .andExpect(jsonPath("$.description").value("Brancher HttpClient à l'API"))
@@ -66,9 +79,10 @@ class TaskApiIntegrationTest {
 
     @Test
     void updateTaskWithNewStatusContract() throws Exception {
-        Task task = repository.save(new Task("Ancien titre", TaskPriority.LOW));
+        Task task = repository.save(new Task("Ancien titre", TaskPriority.LOW, owner));
 
         mockMvc.perform(put("/api/tasks/{id}", task.getId())
+                        .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -87,9 +101,10 @@ class TaskApiIntegrationTest {
 
     @Test
     void keepCompletedCompatibleWithCurrentAngularFrontend() throws Exception {
-        Task task = repository.save(new Task("Ancien contrat", TaskPriority.LOW));
+        Task task = repository.save(new Task("Ancien contrat", TaskPriority.LOW, owner));
 
         mockMvc.perform(put("/api/tasks/{id}", task.getId())
+                        .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"Ancien contrat", "priority":"medium", "completed":true}
@@ -101,12 +116,12 @@ class TaskApiIntegrationTest {
 
     @Test
     void deleteTask() throws Exception {
-        Task task = repository.save(new Task("À supprimer", TaskPriority.LOW));
+        Task task = repository.save(new Task("À supprimer", TaskPriority.LOW, owner));
 
-        mockMvc.perform(delete("/api/tasks/{id}", task.getId()))
+        mockMvc.perform(delete("/api/tasks/{id}", task.getId()).with(authenticated()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/tasks/{id}", task.getId()))
+        mockMvc.perform(get("/api/tasks/{id}", task.getId()).with(authenticated()))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Tâche introuvable"));
     }
@@ -114,6 +129,7 @@ class TaskApiIntegrationTest {
     @Test
     void rejectInvalidTitle() throws Exception {
         mockMvc.perform(post("/api/tasks")
+                        .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"title":"x", "priority":"high"}
@@ -125,9 +141,10 @@ class TaskApiIntegrationTest {
 
     @Test
     void rejectContradictoryStatusAndCompletedValues() throws Exception {
-        Task task = repository.save(new Task("Contrat incohérent", TaskPriority.LOW));
+        Task task = repository.save(new Task("Contrat incohérent", TaskPriority.LOW, owner));
 
         mockMvc.perform(put("/api/tasks/{id}", task.getId())
+                        .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -139,5 +156,9 @@ class TaskApiIntegrationTest {
                                 """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.fieldErrors.stateConsistent").exists());
+    }
+
+    private RequestPostProcessor authenticated() {
+        return request -> { request.addHeader("Authorization", "Bearer " + jwtService.createToken(owner.getEmail())); return request; };
     }
 }

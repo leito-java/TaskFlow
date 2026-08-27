@@ -8,6 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import com.leito.taskmanager.user.domain.User;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -38,12 +41,16 @@ public class Task {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
     protected Task() {
         // Constructeur requis par JPA.
     }
 
-    public Task(String title, TaskPriority priority) {
-        this(title, null, priority, TaskStatus.TODO, null);
+    public Task(String title, TaskPriority priority, User owner) {
+        this(title, null, priority, TaskStatus.TODO, null, owner);
     }
 
     public Task(
@@ -51,13 +58,15 @@ public class Task {
             String description,
             TaskPriority priority,
             TaskStatus status,
-            LocalDate dueDate
+            LocalDate dueDate,
+            User owner
     ) {
         this.title = Objects.requireNonNull(title);
         this.description = description;
         this.priority = Objects.requireNonNull(priority);
         this.status = Objects.requireNonNull(status);
         this.dueDate = dueDate;
+        this.owner = Objects.requireNonNull(owner);
     }
 
     public Long getId() {

@@ -3,11 +3,13 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
 import { TaskApiService } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
+import { AuthService } from './auth.service';
 
 /** État d'interface partagé ; la source persistante est maintenant l'API. */
 @Injectable({ providedIn: 'root' })
 export class TaskStore {
   private readonly api = inject(TaskApiService);
+  private readonly auth = inject(AuthService);
   // L'état reste privé : les composants peuvent le lire, mais pas le modifier directement.
   private readonly taskState = signal<Task[]>([]);
   private readonly loadingState = signal(false);
@@ -24,7 +26,7 @@ export class TaskStore {
   readonly remainingTaskCount = computed(() => this.todoTaskCount() + this.inProgressTaskCount());
 
   constructor() {
-    this.loadTasks();
+    if (this.auth.isAuthenticated()) this.loadTasks();
   }
 
   /** Charge la liste depuis Spring Boot et met à jour les états d'interface. */

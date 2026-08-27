@@ -15,9 +15,14 @@ server:
   port: 8080
 
 app:
+  security:
+    # À remplacer en production par une variable d'environnement longue et secrète.
+    jwt-secret: ${JWT_SECRET:change-this-development-secret-before-production-please}
+    jwt-expiration-minutes: 480
   cors:
     allowed-origins:
       - http://localhost:4200
+      - http://localhost:4201
 
 springdoc:
   swagger-ui:

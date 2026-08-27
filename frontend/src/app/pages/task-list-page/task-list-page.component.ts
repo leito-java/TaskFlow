@@ -16,6 +16,8 @@ export class TaskListPageComponent {
   private readonly router = inject(Router);
   protected readonly currentFilter = signal<TaskFilter>('all');
 
+  constructor() { this.store.loadTasks(); }
+
   // La liste se recalcule quand le store ou le filtre change.
   protected readonly filteredTasks = computed(() => {
     const filter = this.currentFilter();

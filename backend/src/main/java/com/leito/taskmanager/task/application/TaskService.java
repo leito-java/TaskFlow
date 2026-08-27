@@ -6,6 +6,7 @@ import com.leito.taskmanager.task.api.UpdateTaskRequest;
 import com.leito.taskmanager.task.domain.Task;
 import com.leito.taskmanager.task.domain.TaskStatus;
 import com.leito.taskmanager.task.infrastructure.TaskRepository;
+import com.leito.taskmanager.user.application.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,37 +18,40 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository repository;
+    private final UserService userService;
 
-    public TaskService(TaskRepository repository) {
+    public TaskService(TaskRepository repository, UserService userService) {
         this.repository = repository;
+        this.userService = userService;
     }
 
-    public List<TaskResponse> findAll() {
-        return repository.findAllByOrderByIdAsc().stream()
+    public List<TaskResponse> findAll(String email) {
+        return repository.findAllByOwnerEmailOrderByIdAsc(email).stream()
                 .map(TaskResponse::from)
                 .toList();
     }
 
-    public TaskResponse findById(long id) {
-        return TaskResponse.from(findEntity(id));
+    public TaskResponse findById(long id, String email) {
+        return TaskResponse.from(findEntity(id, email));
     }
 
     @Transactional
-    public TaskResponse create(CreateTaskRequest request) {
+    public TaskResponse create(CreateTaskRequest request, String email) {
         TaskStatus initialStatus = request.status() == null ? TaskStatus.TODO : request.status();
         Task task = new Task(
                 normalizeTitle(request.title()),
                 request.description(),
                 request.priority(),
                 initialStatus,
-                request.dueDate()
+                request.dueDate(),
+                userService.findByEmail(email)
         );
         return TaskResponse.from(repository.save(task));
     }
 
     @Transactional
-    public TaskResponse update(long id, UpdateTaskRequest request) {
-        Task task = findEntity(id);
+    public TaskResponse update(long id, UpdateTaskRequest request, String email) {
+        Task task = findEntity(id, email);
         task.update(
                 normalizeTitle(request.title()),
                 request.description(),
@@ -59,13 +63,13 @@ public class TaskService {
     }
 
     @Transactional
-    public void delete(long id) {
-        Task task = findEntity(id);
+    public void delete(long id, String email) {
+        Task task = findEntity(id, email);
         repository.delete(task);
     }
 
-    private Task findEntity(long id) {
-        return repository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+    private Task findEntity(long id, String email) {
+        return repository.findByIdAndOwnerEmail(id, email).orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     private String normalizeTitle(String title) {
