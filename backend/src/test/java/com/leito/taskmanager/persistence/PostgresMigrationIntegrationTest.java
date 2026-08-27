@@ -28,17 +28,22 @@ class PostgresMigrationIntegrationTest {
                 "SELECT COUNT(*) FROM flyway_schema_history WHERE success = TRUE",
                 Long.class
         );
+        Long legacyOwnerId = jdbcTemplate.queryForObject(
+                "SELECT id FROM app_users WHERE email = 'legacy@taskflow.local'",
+                Long.class
+        );
 
         jdbcTemplate.update(
                 """
-                INSERT INTO tasks (title, description, priority, status, due_date)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO tasks (title, description, priority, status, due_date, owner_id)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 "Tester la migration PostgreSQL",
                 "Vérifier la deuxième migration",
                 "HIGH",
                 "IN_PROGRESS",
-                LocalDate.of(2026, 9, 15)
+                LocalDate.of(2026, 9, 15),
+                legacyOwnerId
         );
 
         String taskStatus = jdbcTemplate.queryForObject(
@@ -58,7 +63,7 @@ class PostgresMigrationIntegrationTest {
                 Long.class
         );
 
-        assertThat(successfulMigrations).isEqualTo(2);
+        assertThat(successfulMigrations).isEqualTo(3);
         assertThat(taskStatus).isEqualTo("IN_PROGRESS");
         assertThat(removedCompletedColumns).isZero();
     }

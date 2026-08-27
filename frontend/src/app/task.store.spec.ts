@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { TaskApiService, TaskUpdate } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { TaskStore } from './task.store';
+import { AuthService } from './auth.service';
 
 class FakeTaskApiService {
   private data: Task[] = [
@@ -53,7 +54,10 @@ describe('TaskStore', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: TaskApiService, useClass: FakeTaskApiService }],
+      providers: [
+        { provide: TaskApiService, useClass: FakeTaskApiService },
+        { provide: AuthService, useValue: { isAuthenticated: () => true } },
+      ],
     });
     store = TestBed.inject(TaskStore);
   });

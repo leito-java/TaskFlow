@@ -105,6 +105,7 @@ nav a.active { background: #fff; box-shadow: 0 4px 14px rgb(15 23 42 / 8%); colo
   font-size: .75rem;
   font-weight: 750;
 }
+.account-link { justify-self:end; border:0; background:transparent; color:#64748b; font:inherit; font-size:.75rem; font-weight:700; cursor:pointer; }
 
 .route-container { min-width: 0; }
 

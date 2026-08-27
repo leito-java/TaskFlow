@@ -1,5 +1,7 @@
 # TaskFlow
 
+> Une application de gestion de tâches full-stack : Angular, Spring Boot, PostgreSQL et authentification JWT.
+
 TaskFlow est une application full-stack de gestion de tâches construite avec Angular, Spring Boot et PostgreSQL. Ce dépôt contient le produit ; les cours et exercices restent dans les dépôts pédagogiques séparés.
 
 ## Fonctionnalités actuelles

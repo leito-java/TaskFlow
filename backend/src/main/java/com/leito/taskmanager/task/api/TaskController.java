@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.security.Principal;
 
 import java.net.URI;
 import java.util.List;
@@ -27,29 +28,29 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> findAll() {
-        return service.findAll();
+    public List<TaskResponse> findAll(Principal principal) {
+        return service.findAll(principal.getName());
     }
 
     @GetMapping("/{id}")
-    public TaskResponse findById(@PathVariable long id) {
-        return service.findById(id);
+    public TaskResponse findById(@PathVariable long id, Principal principal) {
+        return service.findById(id, principal.getName());
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request) {
-        TaskResponse created = service.create(request);
+    public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request, Principal principal) {
+        TaskResponse created = service.create(request, principal.getName());
         return ResponseEntity.created(URI.create("/api/tasks/" + created.id())).body(created);
     }
 
     @PutMapping("/{id}")
-    public TaskResponse update(@PathVariable long id, @Valid @RequestBody UpdateTaskRequest request) {
-        return service.update(id, request);
+    public TaskResponse update(@PathVariable long id, @Valid @RequestBody UpdateTaskRequest request, Principal principal) {
+        return service.update(id, request, principal.getName());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        service.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable long id, Principal principal) {
+        service.delete(id, principal.getName());
         return ResponseEntity.noContent().build();
     }
 }

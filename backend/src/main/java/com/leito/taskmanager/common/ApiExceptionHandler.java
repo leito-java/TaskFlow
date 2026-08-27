@@ -8,6 +8,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.leito.taskmanager.user.application.EmailAlreadyUsedException;
+import com.leito.taskmanager.user.application.InvalidCredentialsException;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
@@ -16,6 +18,20 @@ import java.util.Map;
 /** Produit des erreurs JSON cohérentes au format Problem Details (RFC 9457). */
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    @ExceptionHandler(EmailAlreadyUsedException.class)
+    ProblemDetail emailAlreadyUsed(EmailAlreadyUsedException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Adresse e-mail indisponible");
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    ProblemDetail invalidCredentials(InvalidCredentialsException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        problem.setTitle("Connexion refusée");
+        return problem;
+    }
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ProblemDetail handleNotFound(TaskNotFoundException exception, HttpServletRequest request) {

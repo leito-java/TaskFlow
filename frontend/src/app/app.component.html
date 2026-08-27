@@ -12,13 +12,21 @@
     <!-- routerLink navigue sans recharger la page ; routerLinkActive signale le lien courant. -->
     <nav aria-label="Navigation principale">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Accueil</a>
-      <a routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">
-        Tâches <span class="nav-count">{{ taskCount() }}</span>
-      </a>
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">
+          Tâches <span class="nav-count">{{ taskCount() }}</span>
+        </a>
+      }
       <a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">À propos</a>
     </nav>
 
-    <a class="new-task-link" routerLink="/tasks/new">Nouvelle tâche <span aria-hidden="true">＋</span></a>
+    @if (auth.isAuthenticated()) {
+      <a class="account-link" routerLink="/security">Compte</a>
+      <button class="account-link" type="button" (click)="logout()">Déconnexion</button>
+      <a class="new-task-link" routerLink="/tasks/new">Nouvelle tâche <span aria-hidden="true">＋</span></a>
+    } @else {
+      <a class="new-task-link" routerLink="/login">Connexion</a>
+    }
   </header>
 
   <!-- Angular remplace le contenu de router-outlet selon l'URL active. -->

@@ -1,0 +1,22 @@
+<section class="security-page">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <p class="eyebrow">Compte</p>
+    <h1>Sécurité du compte</h1>
+    <p>Choisissez un mot de passe unique, long et différent de celui de votre e-mail.</p>
+
+    @if (message()) { <p class="success" role="status">{{ message() }}</p> }
+    @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
+
+    <label for="current-password">Mot de passe actuel</label>
+    <input id="current-password" type="password" formControlName="currentPassword" autocomplete="current-password">
+
+    <label for="new-password">Nouveau mot de passe</label>
+    <input id="new-password" type="password" formControlName="newPassword" autocomplete="new-password">
+    @if (form.controls.newPassword.touched && form.controls.newPassword.invalid) { <small>Utilisez au moins 8 caractères.</small> }
+
+    <label for="confirm-password">Confirmer le nouveau mot de passe</label>
+    <input id="confirm-password" type="password" formControlName="confirmPassword" autocomplete="new-password">
+
+    <button type="submit" [disabled]="saving()">{{ saving() ? 'Modification…' : 'Modifier mon mot de passe' }}</button>
+  </form>
+</section>
