@@ -35,12 +35,32 @@
       <div class="api-message loading-message" role="status">Chargement des tâches depuis l'API…</div>
     } @else {
       <app-task-filter [activeFilter]="currentFilter()" (filterChanged)="currentFilter.set($event)" />
-      <app-task-list
-        [tasks]="filteredTasks()"
-        (toggled)="store.toggleTask($event)"
-        (deleted)="store.deleteTask($event)"
-        (editRequested)="editTask($event)"
-      />
+      <div class="task-tools" aria-label="Rechercher et trier">
+        <label>
+          <span>Rechercher</span>
+          <input type="search" placeholder="Rechercher une tâche…" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
+        </label>
+        <label>
+          <span>Trier par</span>
+          <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+            <option value="priority">Priorité</option>
+            <option value="dueDate">Date d’échéance</option>
+          </select>
+        </label>
+      </div>
+      @if (filteredTasks().length === 0) {
+        <div class="empty-state" role="status">
+          <strong>Aucune tâche ne correspond.</strong>
+          <span>Modifiez votre recherche ou votre filtre pour afficher d’autres tâches.</span>
+        </div>
+      } @else {
+        <app-task-list
+          [tasks]="filteredTasks()"
+          (toggled)="store.toggleTask($event)"
+          (deleted)="store.deleteTask($event)"
+          (editRequested)="editTask($event)"
+        />
+      }
     }
   </section>
 </section>

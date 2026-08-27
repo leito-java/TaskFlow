@@ -73,6 +73,18 @@ describe('routes', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Organiser la prochaine livraison');
   });
 
+  it('affiche un état vide lorsqu’une recherche ne correspond à aucune tâche', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/tasks', TaskListPageComponent);
+
+    const search: HTMLInputElement | null = harness.routeNativeElement?.querySelector('input[type="search"]') ?? null;
+    search!.value = 'inexistante';
+    search!.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Aucune tâche ne correspond.');
+  });
+
   it('lit le paramètre id pour préremplir la page de modification', async () => {
     const harness = await RouterTestingHarness.create();
 
