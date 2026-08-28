@@ -65,6 +65,24 @@ $PullRequestRisksOrLimits
 "@
 }
 
+function Find-OpenPullRequestForBranch {
+  param([string]$Branch)
+
+  # Contrairement à `gh pr view`, `gh pr list` renvoie simplement [] lorsque
+  # la branche n'a pas encore de PR : c'est le cas attendu avant la création.
+  $result = & $ghCommand pr list --head $Branch --state open --limit 1 --json number,url,state
+  if ($LASTEXITCODE -ne 0) {
+    throw "Impossible de rechercher la Pull Request de la branche $Branch."
+  }
+
+  $json = ($result | Out-String).Trim()
+  if ([string]::IsNullOrWhiteSpace($json) -or $json -eq '[]') {
+    return $null
+  }
+
+  return @($json | ConvertFrom-Json)[0]
+}
+
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repositoryRoot
 
@@ -102,12 +120,7 @@ try {
 Write-Host "Publication de la branche $branch..." -ForegroundColor Cyan
 Invoke-CheckedCommand git @('push', '-u', 'origin', $branch)
 
-$pullRequest = $null
-$existingPullRequestsOutput = & $ghCommand pr list --head $branch --state open --limit 1 --json number,url,state
-$existingPullRequestsJson = ($existingPullRequestsOutput | Out-String).Trim()
-if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($existingPullRequestsJson)) {
-  $pullRequest = ($existingPullRequestsJson | ConvertFrom-Json | Select-Object -First 1)
-}
+$pullRequest = Find-OpenPullRequestForBranch -Branch $branch
 
 if ($null -eq $pullRequest) {
   if ([string]::IsNullOrWhiteSpace($Title)) {
@@ -124,21 +137,14 @@ if ($null -eq $pullRequest) {
   $createOutput = & $ghCommand @createArguments
   if ($LASTEXITCODE -ne 0) { throw "La création de la Pull Request a échoué." }
 
-  # GitHub CLI retourne normalement l'URL de la PR. Certaines configurations
-  # ne retournent toutefois aucun texte : on retrouve alors la PR par sa branche.
-  $url = ($createOutput | Select-Object -Last 1)
-  if (-not [string]::IsNullOrWhiteSpace($url)) {
-    $pullRequest = (& $ghCommand pr view $url --json number,url,state | ConvertFrom-Json)
-  } else {
-    $createdPullRequestOutput = & $ghCommand pr view $branch --json number,url,state 2>$null
-    if ($LASTEXITCODE -ne 0 -or $null -eq $createdPullRequestOutput) {
-      throw "GitHub CLI n'a pas retourné la Pull Request créée. Vérifie GitHub avant de relancer le script."
-    }
-    $pullRequest = ($createdPullRequestOutput | ConvertFrom-Json)
+  Start-Sleep -Seconds 2
+  $pullRequest = Find-OpenPullRequestForBranch -Branch $branch
+  if ($null -eq $pullRequest) {
+    throw "GitHub a créé la Pull Request mais elle est introuvable. Vérifie GitHub avant de relancer le script."
   }
 }
 
-if ($pullRequest.state -ne 'OPEN') {
+if ($null -eq $pullRequest.PSObject.Properties['state'] -or $pullRequest.state -ne 'OPEN') {
   throw "La Pull Request #$($pullRequest.number) n'est pas ouverte."
 }
 
