@@ -14,7 +14,7 @@
 
 - [x] recherche et tri ;
 - [x] projets personnels et filtre par projet ;
-- [ ] confirmation de suppression ;
+- [x] confirmation de suppression ;
 - [ ] notifications de succès et d'erreur ;
 - [ ] accessibilité et responsive renforcés ;
 - [ ] tests end-to-end du parcours critique.
