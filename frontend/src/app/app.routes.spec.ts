@@ -41,7 +41,9 @@ class FakeTaskApiService {
   updateTask(id: number, update: TaskUpdate) {
     return of({ id, ...update, completed: update.status === 'done' });
   }
-  deleteTask() { return of(undefined); }
+  deleteTask(id: number) {
+    return of(undefined);
+  }
 }
 
 describe('routes', () => {
@@ -85,6 +87,44 @@ describe('routes', () => {
     harness.detectChanges();
 
     expect(harness.routeNativeElement?.textContent).toContain('Aucune tâche ne correspond.');
+  });
+
+  it('demande confirmation avant de supprimer une tâche', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/tasks', TaskListPageComponent);
+
+    const deleteButton = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Supprimer')) as HTMLButtonElement;
+    deleteButton.click();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Supprimer cette tâche ?');
+    expect(harness.routeNativeElement?.textContent).toContain('Préparer le rapport hebdomadaire');
+
+    const cancelButton = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Annuler')) as HTMLButtonElement;
+    cancelButton.click();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).not.toContain('Supprimer cette tâche ?');
+    expect(harness.routeNativeElement?.textContent).toContain('Préparer le rapport hebdomadaire');
+  });
+
+  it('supprime uniquement après confirmation explicite', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/tasks', TaskListPageComponent);
+
+    const deleteButton = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Supprimer')) as HTMLButtonElement;
+    deleteButton.click();
+    harness.detectChanges();
+
+    const confirmButton = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Oui, supprimer')) as HTMLButtonElement;
+    confirmButton.click();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).not.toContain('Supprimer cette tâche ?');
   });
 
   it('lit le paramètre id pour préremplir la page de modification', async () => {

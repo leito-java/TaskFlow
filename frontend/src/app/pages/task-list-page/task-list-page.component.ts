@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TaskFilterComponent } from '../../task-filter/task-filter.component';
 import { TaskListComponent } from '../../task-list/task-list.component';
-import { TaskFilter } from '../../task.model';
+import { Task, TaskFilter } from '../../task.model';
 import { ProjectApiService } from '../../project-api.service';
 import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
@@ -22,6 +22,8 @@ export class TaskListPageComponent {
   protected readonly sortBy = signal<'priority' | 'dueDate'>('priority');
   protected readonly projectId = signal<number | null>(null);
   protected readonly projects = signal<Project[]>([]);
+  // La tâche n'est supprimée qu'après une confirmation explicite dans la fenêtre modale.
+  protected readonly taskPendingDeletion = signal<Task | null>(null);
   private readonly projectApi = inject(ProjectApiService);
 
   constructor() { this.store.loadTasks(); this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) }); }
@@ -42,6 +44,24 @@ export class TaskListPageComponent {
   protected editTask(id: number): void {
     // La navigation construit l'URL dynamique /tasks/:id/edit.
     void this.router.navigate(['/tasks', id, 'edit']);
+  }
+
+  /** Ouvre la confirmation sans appeler l'API. */
+  protected requestDeletion(id: number): void {
+    this.taskPendingDeletion.set(this.store.taskById(id));
+  }
+
+  /** Confirme la suppression puis referme la fenêtre. */
+  protected confirmDeletion(): void {
+    const task = this.taskPendingDeletion();
+    if (!task) return;
+    this.store.deleteTask(task.id);
+    this.taskPendingDeletion.set(null);
+  }
+
+  /** Annuler laisse la liste et la base de données inchangées. */
+  protected cancelDeletion(): void {
+    this.taskPendingDeletion.set(null);
   }
 
   private compareTasks(left: { priority: string; dueDate: string | null }, right: { priority: string; dueDate: string | null }): number {

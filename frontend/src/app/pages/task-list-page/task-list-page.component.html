@@ -64,10 +64,27 @@
         <app-task-list
           [tasks]="filteredTasks()"
           (toggled)="store.toggleTask($event)"
-          (deleted)="store.deleteTask($event)"
+          (deleted)="requestDeletion($event)"
           (editRequested)="editTask($event)"
         />
       }
     }
   </section>
 </section>
+
+@if (taskPendingDeletion(); as task) {
+  <div class="confirmation-backdrop" role="presentation">
+    <section class="confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description">
+      <span class="confirmation-icon" aria-hidden="true">!</span>
+      <div>
+        <p>Suppression définitive</p>
+        <h2 id="delete-dialog-title">Supprimer cette tâche ?</h2>
+        <span id="delete-dialog-description">« {{ task.title }} » sera supprimée définitivement. Cette action est irréversible.</span>
+      </div>
+      <div class="confirmation-actions">
+        <button class="cancel-button" type="button" (click)="cancelDeletion()">Annuler</button>
+        <button class="confirm-delete-button" type="button" (click)="confirmDeletion()">Oui, supprimer</button>
+      </div>
+    </section>
+  </div>
+}
