@@ -1,0 +1,25 @@
+<section class="projects-page" aria-labelledby="projects-title">
+  <header>
+    <p>Organisation</p>
+    <h1 id="projects-title">Mes projets</h1>
+    <span>Regroupez vos tâches par contexte : formation, travail ou projet personnel.</span>
+  </header>
+
+  <form (ngSubmit)="create()">
+    <label for="project-name">Nom du projet</label>
+    <div class="project-form-actions">
+      <input id="project-name" name="name" [(ngModel)]="name" placeholder="Ex. Formation" maxlength="80" required>
+      <button type="submit" [disabled]="!name.trim()">Créer un projet</button>
+    </div>
+  </form>
+
+  @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+  <section class="projects-list" aria-labelledby="projects-list-title">
+    <h2 id="projects-list-title">Vos projets</h2>
+    <ul>
+      @for (project of projects(); track project.id) { <li><span aria-hidden="true">▣</span>{{ project.name }}</li> }
+      @empty { <li class="empty-state">Aucun projet. Créez votre premier projet.</li> }
+    </ul>
+  </section>
+</section>

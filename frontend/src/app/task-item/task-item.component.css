@@ -52,7 +52,7 @@ article:hover {
 .task-description {
   max-width: 620px;
   overflow: hidden;
-  color: #7a8496;
+  color: #657185;
   font-size: .76rem;
   line-height: 1.5;
   text-overflow: ellipsis;
@@ -76,7 +76,7 @@ article:hover {
 .status-progress { background: #eef4ff; color: #3659a2; }
 .status-done { background: #e8fbf3; color: #087f5b; }
 .priority-low { background: #edfdf6; color: #087f5b; }
-.priority-medium { background: #fff7e6; color: #b25e09; }
+.priority-medium { background: #fff7e6; color: #9a4f08; }
 .priority-high { background: #fff0f2; color: #c43653; }
 .due-date { background: #f5f3ff; color: #6253cf; font-style: normal; }
 .project { background: #eaf6ff; color: #176e9e; }
@@ -115,4 +115,5 @@ button {
   .task-main { width: 100%; }
   .task-description { white-space: normal; }
   .item-actions { justify-content: flex-end; width: 100%; }
+  .item-actions button { flex: 1; min-height: 40px; }
 }

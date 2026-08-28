@@ -45,7 +45,7 @@
   </label>
   <span class="item-actions">
     <!-- Les boutons émettent une intention ; la page délègue ensuite l'action au store. -->
-    <button class="edit-button" type="button" (click)="editRequested.emit(task().id)">Modifier</button>
-    <button class="delete-button" type="button" (click)="deleted.emit(task().id)">Supprimer</button>
+    <button class="edit-button" type="button" [attr.aria-label]="'Modifier : ' + task().title" (click)="editRequested.emit(task().id)">Modifier</button>
+    <button class="delete-button" type="button" [attr.aria-label]="'Supprimer : ' + task().title" (click)="deleted.emit(task().id)">Supprimer</button>
   </span>
 </article>

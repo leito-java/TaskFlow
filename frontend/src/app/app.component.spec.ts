@@ -33,4 +33,9 @@ describe('AppComponent', () => {
   it('réserve une zone aux pages routées', () => {
     expect(fixture.nativeElement.querySelector('router-outlet')).not.toBeNull();
   });
+
+  it('propose un lien pour accéder directement au contenu principal au clavier', () => {
+    expect(fixture.nativeElement.querySelector('a[href="#main-content"]')?.textContent)
+      .toContain('Aller au contenu principal');
+  });
 });
