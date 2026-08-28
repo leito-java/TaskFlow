@@ -5,6 +5,7 @@ frontend/dist/
 frontend/.angular/
 frontend/coverage/
 frontend/out-tsc/
+reports/
 
 # Build Maven
 backend/target/

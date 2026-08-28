@@ -1,0 +1,18 @@
+:host { display: block; }
+.projects-page { width: min(760px, calc(100% - 40px)); margin: 54px auto 64px; }
+header p { margin: 0 0 7px; color: #6d5ce7; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+header h1 { margin: 0; color: #172033; font-size: clamp(2.25rem, 5vw, 3.4rem); letter-spacing: -.05em; }
+header > span { display: block; margin-top: 11px; color: #64748b; line-height: 1.5; }
+form, .projects-list { margin-top: 28px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 18px; background: rgb(255 255 255 / 82%); box-shadow: 0 16px 38px rgb(15 23 42 / 6%); }
+label { display: block; margin-bottom: 8px; color: #334155; font-size: .8rem; font-weight: 750; }
+.project-form-actions { display: flex; gap: 10px; }
+input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #334155; font: inherit; }
+button { min-height: 44px; padding: 0 14px; border: 0; border-radius: 10px; background: #172033; color: #fff; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 750; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+.error { margin: 14px 0 0; padding: 11px; border-radius: 10px; background: #fff1f2; color: #9f1239; font-size: .8rem; }
+.projects-list h2 { margin: 0 0 14px; color: #172033; font-size: 1.1rem; }
+ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+li { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #f8fafc; color: #334155; font-size: .86rem; font-weight: 650; }
+li span { color: #6253cf; }
+.empty-state { justify-content: center; border: 1px dashed #cbd5e1; color: #64748b; text-align: center; font-weight: 500; }
+@media (max-width: 560px) { .projects-page { width: min(100% - 24px, 760px); margin-top: 38px; } form, .projects-list { padding: 18px; } .project-form-actions { flex-direction: column; } button { width: 100%; } }

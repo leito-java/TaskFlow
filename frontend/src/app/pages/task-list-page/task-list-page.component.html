@@ -74,7 +74,7 @@
 
 @if (taskPendingDeletion(); as task) {
   <div class="confirmation-backdrop" role="presentation">
-    <section class="confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description">
+    <section class="confirmation-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description" tabindex="-1" (keydown.escape)="cancelDeletion()">
       <span class="confirmation-icon" aria-hidden="true">!</span>
       <div>
         <p>Suppression définitive</p>
@@ -82,7 +82,7 @@
         <span id="delete-dialog-description">« {{ task.title }} » sera supprimée définitivement. Cette action est irréversible.</span>
       </div>
       <div class="confirmation-actions">
-        <button class="cancel-button" type="button" (click)="cancelDeletion()">Annuler</button>
+        <button class="cancel-button" type="button" autofocus (click)="cancelDeletion()">Annuler</button>
         <button class="confirm-delete-button" type="button" (click)="confirmDeletion()">Oui, supprimer</button>
       </div>
     </section>

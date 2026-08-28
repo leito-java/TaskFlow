@@ -25,6 +25,8 @@ describe('TaskItemComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Tester les événements');
     expect(fixture.nativeElement.textContent).toContain('En cours');
     expect(fixture.nativeElement.textContent).toContain('2026-09-15');
+    expect(fixture.nativeElement.querySelector('.delete-button')?.getAttribute('aria-label'))
+      .toBe('Supprimer : Tester les événements');
   });
 
   it('émet l’identifiant pour les trois actions', () => {

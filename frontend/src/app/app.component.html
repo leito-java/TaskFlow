@@ -1,7 +1,8 @@
 <div class="app-shell">
+  <a class="skip-link" href="#main-content">Aller au contenu principal</a>
   <!-- Cette barre est commune à toutes les pages de l'application. -->
   <header class="topbar">
-    <a class="brand" routerLink="/" aria-label="Accueil TaskFlow">
+    <a class="brand" routerLink="/" aria-label="TaskFlow — vos priorités, simplement">
       <span class="brand-mark" aria-hidden="true">✓</span>
       <span>
         <strong>TaskFlow</strong>
@@ -49,7 +50,7 @@
   }
 
   <!-- Angular remplace le contenu de router-outlet selon l'URL active. -->
-  <main class="route-container">
+  <main id="main-content" class="route-container" tabindex="-1">
     <router-outlet />
   </main>
 

@@ -16,7 +16,7 @@
 - [x] projets personnels et filtre par projet ;
 - [x] confirmation de suppression ;
 - [x] notifications de succès et d'erreur ;
-- [ ] accessibilité et responsive renforcés ;
+- [x] accessibilité et responsive renforcés ;
 - [ ] tests end-to-end du parcours critique.
 
 ## Version 0.3 — Comptes et sécurité
