@@ -10,6 +10,8 @@
 6. pousser la branche et ouvrir une Pull Request ;
 7. fusionner par squash uniquement lorsque la CI est verte.
 
+Pour automatiser les étapes après le commit, consultez [la procédure d'automatisation](docs/AUTOMATION.md).
+
 ```powershell
 git switch main
 git pull --ff-only origin main
