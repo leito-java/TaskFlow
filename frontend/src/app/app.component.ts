@@ -4,6 +4,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TaskStore } from './task.store';
 import { AuthService } from './auth.service';
+import { NotificationService } from './notification.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent {
   // Le compteur reste visible dans la navigation, quelle que soit la page active.
   protected readonly taskCount = inject(TaskStore).taskCount;
   protected readonly auth = inject(AuthService);
+  protected readonly notifications = inject(NotificationService);
   private readonly router = inject(Router);
 
   protected logout(): void { this.auth.logout(); void this.router.navigateByUrl('/login'); }

@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AuthService } from './auth.service';
 import { TaskStore } from './task.store';
+import { NotificationService } from './notification.service';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -15,6 +16,7 @@ describe('AppComponent', () => {
         provideRouter([]),
         { provide: AuthService, useValue: { isAuthenticated: () => true, logout: () => undefined } },
         { provide: TaskStore, useValue: { taskCount: () => 0 } },
+        { provide: NotificationService, useValue: { current: () => null, dismiss: () => undefined } },
       ],
     });
     fixture = TestBed.createComponent(AppComponent);

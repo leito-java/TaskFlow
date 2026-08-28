@@ -4,12 +4,14 @@ import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
 import { TaskApiService } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { AuthService } from './auth.service';
+import { NotificationService } from './notification.service';
 
 /** État d'interface partagé ; la source persistante est maintenant l'API. */
 @Injectable({ providedIn: 'root' })
 export class TaskStore {
   private readonly api = inject(TaskApiService);
   private readonly auth = inject(AuthService);
+  private readonly notifications = inject(NotificationService);
   // L'état reste privé : les composants peuvent le lire, mais pas le modifier directement.
   private readonly taskState = signal<Task[]>([]);
   private readonly loadingState = signal(false);
@@ -88,7 +90,10 @@ export class TaskStore {
   deleteTask(id: number): void {
     this.clearError();
     this.api.deleteTask(id).subscribe({
-      next: () => this.taskState.update((tasks) => tasks.filter((task) => task.id !== id)),
+      next: () => {
+        this.taskState.update((tasks) => tasks.filter((task) => task.id !== id));
+        this.notifications.success('Tâche supprimée avec succès.');
+      },
       error: (error: unknown) => this.reportError(error),
     });
   }
@@ -107,14 +112,15 @@ export class TaskStore {
   }
 
   private reportError(error: unknown): void {
+    let message: string;
     if (error instanceof HttpErrorResponse && error.status === 0) {
-      this.errorState.set("Impossible de joindre l'API. Vérifiez que Spring Boot est lancé sur le port 8080.");
-      return;
+      message = "Impossible de joindre l'API. Vérifiez que Spring Boot est lancé sur le port 8080.";
+    } else if (error instanceof HttpErrorResponse && typeof error.error?.detail === 'string') {
+      message = error.error.detail;
+    } else {
+      message = "Une erreur inattendue s'est produite. Réessayez.";
     }
-    if (error instanceof HttpErrorResponse && typeof error.error?.detail === 'string') {
-      this.errorState.set(error.error.detail);
-      return;
-    }
-    this.errorState.set("Une erreur inattendue s'est produite. Réessayez.");
+    this.errorState.set(message);
+    this.notifications.error(message);
   }
 }
