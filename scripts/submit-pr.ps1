@@ -103,10 +103,10 @@ Write-Host "Publication de la branche $branch..." -ForegroundColor Cyan
 Invoke-CheckedCommand git @('push', '-u', 'origin', $branch)
 
 $pullRequest = $null
-try {
-  $pullRequest = (& $ghCommand pr view $branch --json number,url,state | ConvertFrom-Json)
-} catch {
-  # Aucune Pull Request pour cette branche : elle sera créée ci-dessous.
+$existingPullRequestOutput = & $ghCommand pr view $branch --json number,url,state 2>$null
+$existingPullRequestExitCode = $LASTEXITCODE
+if ($existingPullRequestExitCode -eq 0 -and $null -ne $existingPullRequestOutput) {
+  $pullRequest = ($existingPullRequestOutput | ConvertFrom-Json)
 }
 
 if ($null -eq $pullRequest) {
@@ -130,7 +130,11 @@ if ($null -eq $pullRequest) {
   if (-not [string]::IsNullOrWhiteSpace($url)) {
     $pullRequest = (& $ghCommand pr view $url --json number,url,state | ConvertFrom-Json)
   } else {
-    $pullRequest = (& $ghCommand pr view $branch --json number,url,state | ConvertFrom-Json)
+    $createdPullRequestOutput = & $ghCommand pr view $branch --json number,url,state 2>$null
+    if ($LASTEXITCODE -ne 0 -or $null -eq $createdPullRequestOutput) {
+      throw "GitHub CLI n'a pas retourné la Pull Request créée. Vérifie GitHub avant de relancer le script."
+    }
+    $pullRequest = ($createdPullRequestOutput | ConvertFrom-Json)
   }
 }
 
