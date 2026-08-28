@@ -103,10 +103,10 @@ Write-Host "Publication de la branche $branch..." -ForegroundColor Cyan
 Invoke-CheckedCommand git @('push', '-u', 'origin', $branch)
 
 $pullRequest = $null
-$existingPullRequestOutput = & $ghCommand pr view $branch --json number,url,state 2>$null
-$existingPullRequestExitCode = $LASTEXITCODE
-if ($existingPullRequestExitCode -eq 0 -and $null -ne $existingPullRequestOutput) {
-  $pullRequest = ($existingPullRequestOutput | ConvertFrom-Json)
+$existingPullRequestsOutput = & $ghCommand pr list --head $branch --state open --limit 1 --json number,url,state
+$existingPullRequestsJson = ($existingPullRequestsOutput | Out-String).Trim()
+if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($existingPullRequestsJson)) {
+  $pullRequest = ($existingPullRequestsJson | ConvertFrom-Json | Select-Object -First 1)
 }
 
 if ($null -eq $pullRequest) {
