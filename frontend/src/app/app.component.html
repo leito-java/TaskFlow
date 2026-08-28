@@ -40,6 +40,14 @@
     }
   </header>
 
+  @if (notifications.current(); as notification) {
+    <aside class="notification" [class.notification-error]="notification.kind === 'error'" [class.notification-success]="notification.kind === 'success'" [attr.role]="notification.kind === 'error' ? 'alert' : 'status'">
+      <span class="notification-icon" aria-hidden="true">{{ notification.kind === 'success' ? '✓' : '!' }}</span>
+      <span>{{ notification.message }}</span>
+      <button type="button" aria-label="Fermer la notification" (click)="notifications.dismiss()">×</button>
+    </aside>
+  }
+
   <!-- Angular remplace le contenu de router-outlet selon l'URL active. -->
   <main class="route-container">
     <router-outlet />

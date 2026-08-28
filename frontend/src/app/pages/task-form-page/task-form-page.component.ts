@@ -7,6 +7,7 @@ import { TaskDraft } from '../../task.model';
 import { TaskStore } from '../../task.store';
 import { ProjectApiService } from '../../project-api.service';
 import { Project } from '../../task.model';
+import { NotificationService } from '../../notification.service';
 
 @Component({
   selector: 'app-task-form-page',
@@ -20,6 +21,7 @@ export class TaskFormPageComponent {
   protected readonly store = inject(TaskStore);
   protected readonly saving = signal(false);
   private readonly projectApi = inject(ProjectApiService);
+  private readonly notifications = inject(NotificationService);
   protected readonly projects = signal<Project[]>([]);
 
   constructor() { this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) }); }
@@ -46,7 +48,10 @@ export class TaskFormPageComponent {
     const request = id === null ? this.store.createTask(draft) : this.store.updateTask(id, draft);
     this.saving.set(true);
     request.pipe(finalize(() => this.saving.set(false))).subscribe({
-      next: () => void this.router.navigate(['/tasks']),
+      next: () => {
+        this.notifications.success(id === null ? 'Tâche créée avec succès.' : 'Tâche modifiée avec succès.');
+        void this.router.navigate(['/tasks']);
+      },
     });
   }
 
