@@ -120,9 +120,17 @@ if ($null -eq $pullRequest) {
     -PullRequestRisksOrLimits $RisksOrLimits
 
   $createArguments = @('pr', 'create', '--base', 'main', '--head', $branch, '--title', $Title, '--body', $description)
-  $url = (& gh @createArguments).Trim()
+  $createOutput = & gh @createArguments
   if ($LASTEXITCODE -ne 0) { throw "La création de la Pull Request a échoué." }
-  $pullRequest = (& gh pr view $url --json number,url,state | ConvertFrom-Json)
+
+  # GitHub CLI retourne normalement l'URL de la PR. Certaines configurations
+  # ne retournent toutefois aucun texte : on retrouve alors la PR par sa branche.
+  $url = ($createOutput | Select-Object -Last 1)
+  if (-not [string]::IsNullOrWhiteSpace($url)) {
+    $pullRequest = (& gh pr view $url --json number,url,state | ConvertFrom-Json)
+  } else {
+    $pullRequest = (& gh pr view $branch --json number,url,state | ConvertFrom-Json)
+  }
 }
 
 if ($pullRequest.state -ne 'OPEN') {
