@@ -3,7 +3,7 @@ import { Component, effect, input, output, signal } from '@angular/core';
 // Outils des formulaires réactifs et validateurs fournis par Angular.
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 // Types métier utilisés par le formulaire.
-import { Task, TaskDraft, TaskPriority, TaskStatus } from '../task.model';
+import { Project, Task, TaskDraft, TaskPriority, TaskStatus } from '../task.model';
 
 // Déclaration du composant standalone responsable du formulaire.
 @Component({
@@ -19,6 +19,7 @@ import { Task, TaskDraft, TaskPriority, TaskStatus } from '../task.model';
 export class TaskFormComponent {
   // Une tâche présente signifie que le formulaire est en mode édition.
   readonly task = input<Task | null>(null);
+  readonly projects = input<Project[]>([]);
   // Empêche une double soumission pendant l'appel HTTP.
   readonly busy = input(false);
   // Événement envoyé au parent lorsque les données valides doivent être enregistrées.
@@ -42,6 +43,7 @@ export class TaskFormComponent {
     status: new FormControl<TaskStatus>('todo', { nonNullable: true }),
     // Un input date renvoie une chaîne ISO vide lorsqu'aucune date n'est choisie.
     dueDate: new FormControl('', { nonNullable: true }),
+    projectId: new FormControl<number | null>(null),
   });
 
   constructor() {
@@ -58,6 +60,7 @@ export class TaskFormComponent {
         priority: task?.priority ?? 'medium',
         status: task?.status ?? 'todo',
         dueDate: task?.dueDate ?? '',
+        projectId: task?.projectId ?? null,
       });
     });
   }
@@ -75,10 +78,11 @@ export class TaskFormComponent {
       title: value.title.trim(),
       description: value.description.trim() || null,
       dueDate: value.dueDate || null,
+      projectId: value.projectId,
     });
     // Après une création, prépare le formulaire pour une nouvelle tâche.
     if (!this.task()) {
-      this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '' });
+      this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
     }
     // Masque les messages liés à la tentative précédente.
     this.submitted.set(false);

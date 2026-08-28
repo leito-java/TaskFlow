@@ -7,6 +7,7 @@ import com.leito.taskmanager.task.domain.Task;
 import com.leito.taskmanager.task.domain.TaskStatus;
 import com.leito.taskmanager.task.infrastructure.TaskRepository;
 import com.leito.taskmanager.user.application.UserService;
+import com.leito.taskmanager.project.application.ProjectService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +20,12 @@ public class TaskService {
 
     private final TaskRepository repository;
     private final UserService userService;
+    private final ProjectService projectService;
 
-    public TaskService(TaskRepository repository, UserService userService) {
+    public TaskService(TaskRepository repository, UserService userService, ProjectService projectService) {
         this.repository = repository;
         this.userService = userService;
+        this.projectService = projectService;
     }
 
     public List<TaskResponse> findAll(String email) {
@@ -46,6 +49,7 @@ public class TaskService {
                 request.dueDate(),
                 userService.findByEmail(email)
         );
+        task.setProject(request.projectId() == null ? null : projectService.findOwned(request.projectId(), email));
         return TaskResponse.from(repository.save(task));
     }
 
@@ -59,6 +63,7 @@ public class TaskService {
                 request.resolvedStatus(),
                 request.dueDate()
         );
+        task.setProject(request.projectId() == null ? null : projectService.findOwned(request.projectId(), email));
         return TaskResponse.from(task);
     }
 

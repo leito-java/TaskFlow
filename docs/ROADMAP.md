@@ -12,8 +12,8 @@
 
 ## Version 0.2 — Expérience utilisateur
 
-- [ ] recherche et tri ;
-- [ ] catégories ou étiquettes ;
+- [x] recherche et tri ;
+- [x] projets personnels et filtre par projet ;
 - [ ] confirmation de suppression ;
 - [ ] notifications de succès et d'erreur ;
 - [ ] accessibilité et responsive renforcés ;
@@ -21,10 +21,10 @@
 
 ## Version 0.3 — Comptes et sécurité
 
-- [ ] inscription et connexion ;
-- [ ] authentification sécurisée ;
-- [ ] tâches isolées par utilisateur ;
-- [ ] routes et endpoints protégés ;
+- [x] inscription et connexion ;
+- [x] authentification par jeton ;
+- [x] tâches et projets isolés par utilisateur ;
+- [x] routes et endpoints protégés ;
 - [ ] rôles utilisateur et administrateur ;
 - [ ] tests d'autorisation.
 

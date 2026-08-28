@@ -63,7 +63,7 @@ class PostgresMigrationIntegrationTest {
                 Long.class
         );
 
-        assertThat(successfulMigrations).isEqualTo(3);
+        assertThat(successfulMigrations).isEqualTo(4);
         assertThat(taskStatus).isEqualTo("IN_PROGRESS");
         assertThat(removedCompletedColumns).isZero();
     }

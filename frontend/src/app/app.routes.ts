@@ -8,6 +8,7 @@ export const routes: Routes = [
   { path: '', title: 'Accueil · TaskFlow', component: HomePageComponent },
   { path: 'login', title: 'Connexion · TaskFlow', loadComponent: () => import('./pages/auth-page/auth-page.component').then((m) => m.AuthPageComponent) },
   { path: 'register', title: 'Inscription · TaskFlow', loadComponent: () => import('./pages/auth-page/auth-page.component').then((m) => m.AuthPageComponent) },
+  { path: 'projects', title: 'Projets · TaskFlow', canActivate: [authGuard], loadComponent: () => import('./pages/projects-page/projects-page.component').then((m) => m.ProjectsPageComponent) },
   { path: 'security', title: 'Sécurité · TaskFlow', canActivate: [authGuard], loadComponent: () => import('./pages/security-page/security-page.component').then((m) => m.SecurityPageComponent) },
   // Les autres pages sont chargées seulement lorsqu'elles deviennent nécessaires.
   // Les routes les plus précises sont placées avant la liste générale.

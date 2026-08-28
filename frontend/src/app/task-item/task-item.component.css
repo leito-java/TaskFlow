@@ -63,7 +63,8 @@ article:hover {
 
 .priority,
 .status,
-.due-date {
+.due-date,
+.project {
   width: fit-content;
   padding: 3px 8px;
   border-radius: 999px;
@@ -78,6 +79,7 @@ article:hover {
 .priority-medium { background: #fff7e6; color: #b25e09; }
 .priority-high { background: #fff0f2; color: #c43653; }
 .due-date { background: #f5f3ff; color: #6253cf; font-style: normal; }
+.project { background: #eaf6ff; color: #176e9e; }
 
 .item-actions {
   display: flex;

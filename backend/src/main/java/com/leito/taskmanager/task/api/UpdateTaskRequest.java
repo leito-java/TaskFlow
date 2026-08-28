@@ -26,7 +26,8 @@ public record UpdateTaskRequest(
 
         LocalDate dueDate,
 
-        Boolean completed
+        Boolean completed,
+        Long projectId
 ) {
     public UpdateTaskRequest {
         if (title != null) title = title.trim();

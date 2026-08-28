@@ -65,6 +65,7 @@ describe('TaskFormComponent', () => {
       priority: 'high',
       status: 'todo',
       dueDate: null,
+      projectId: null,
     });
   });
 
@@ -120,6 +121,7 @@ describe('TaskFormComponent', () => {
       priority: 'high',
       status: 'in-progress',
       dueDate: '2026-09-15',
+      projectId: null,
     });
   });
 });

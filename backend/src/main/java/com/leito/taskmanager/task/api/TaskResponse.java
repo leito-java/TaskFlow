@@ -14,7 +14,9 @@ public record TaskResponse(
         TaskPriority priority,
         TaskStatus status,
         LocalDate dueDate,
-        boolean completed
+        boolean completed,
+        Long projectId,
+        String projectName
 ) {
     public static TaskResponse from(Task task) {
         return new TaskResponse(
@@ -24,7 +26,9 @@ public record TaskResponse(
                 task.getPriority(),
                 task.getStatus(),
                 task.getDueDate(),
-                task.isCompleted()
+                task.isCompleted(),
+                task.getProject() == null ? null : task.getProject().getId(),
+                task.getProject() == null ? null : task.getProject().getName()
         );
     }
 }
