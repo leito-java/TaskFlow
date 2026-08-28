@@ -1,5 +1,8 @@
 param(
   [string]$Title,
+  [string]$Objective,
+  [string[]]$Changes,
+  [string]$RisksOrLimits = 'Aucun risque ou travail reporté identifié automatiquement.',
   [switch]$WaitForMerge,
   [ValidateRange(1, 120)][int]$TimeoutMinutes = 30
 )
@@ -13,6 +16,53 @@ function Invoke-CheckedCommand {
   if ($LASTEXITCODE -ne 0) {
     throw "La commande '$Command $($Arguments -join ' ')' a échoué."
   }
+}
+
+function Get-PullRequestBody {
+  param(
+    [string]$PullRequestTitle,
+    [string]$PullRequestObjective,
+    [string[]]$PullRequestChanges,
+    [string]$PullRequestRisksOrLimits
+  )
+
+  if ([string]::IsNullOrWhiteSpace($PullRequestObjective)) {
+    $PullRequestObjective = "Intégrer : $PullRequestTitle"
+  }
+
+  if ($null -eq $PullRequestChanges -or $PullRequestChanges.Count -eq 0) {
+    $PullRequestChanges = @(
+      'Voir les commits et les fichiers modifiés dans cette Pull Request.'
+    )
+  }
+
+  $changeLines = ($PullRequestChanges | ForEach-Object { "- $_" }) -join [Environment]::NewLine
+
+  return @"
+## Objectif
+
+$PullRequestObjective
+
+## Changements
+
+$changeLines
+
+## Vérifications automatisées
+
+- [x] ``npm test`` dans ``frontend``
+- [x] ``npm run build`` dans ``frontend``
+- [x] ``mvn verify`` dans ``backend``
+
+## À vérifier avant la fusion
+
+- [ ] scénario manuel concerné
+- [ ] documentation mise à jour si nécessaire
+- [ ] aucun secret ni fichier généré ajouté
+
+## Risques ou limites
+
+$PullRequestRisksOrLimits
+"@
 }
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
@@ -59,10 +109,17 @@ try {
 }
 
 if ($null -eq $pullRequest) {
-  $createArguments = @('pr', 'create', '--base', 'main', '--head', $branch, '--fill')
-  if (-not [string]::IsNullOrWhiteSpace($Title)) {
-    $createArguments += @('--title', $Title)
+  if ([string]::IsNullOrWhiteSpace($Title)) {
+    $Title = (& git log -1 --pretty=%s).Trim()
   }
+
+  $description = Get-PullRequestBody `
+    -PullRequestTitle $Title `
+    -PullRequestObjective $Objective `
+    -PullRequestChanges $Changes `
+    -PullRequestRisksOrLimits $RisksOrLimits
+
+  $createArguments = @('pr', 'create', '--base', 'main', '--head', $branch, '--title', $Title, '--body', $description)
   $url = (& gh @createArguments).Trim()
   if ($LASTEXITCODE -ne 0) { throw "La création de la Pull Request a échoué." }
   $pullRequest = (& gh pr view $url --json number,url,state | ConvertFrom-Json)
