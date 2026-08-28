@@ -68,7 +68,8 @@ $PullRequestRisksOrLimits
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repositoryRoot
 
-if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+$ghCommand = Join-Path $env:ProgramFiles 'GitHub CLI\gh.exe'
+if (-not (Test-Path -LiteralPath $ghCommand)) {
   throw "GitHub CLI est requis. Installe-le avec : winget install --id GitHub.cli -e"
 }
 
@@ -103,7 +104,7 @@ Invoke-CheckedCommand git @('push', '-u', 'origin', $branch)
 
 $pullRequest = $null
 try {
-  $pullRequest = (& gh pr view $branch --json number,url,state | ConvertFrom-Json)
+  $pullRequest = (& $ghCommand pr view $branch --json number,url,state | ConvertFrom-Json)
 } catch {
   # Aucune Pull Request pour cette branche : elle sera créée ci-dessous.
 }
@@ -120,16 +121,16 @@ if ($null -eq $pullRequest) {
     -PullRequestRisksOrLimits $RisksOrLimits
 
   $createArguments = @('pr', 'create', '--base', 'main', '--head', $branch, '--title', $Title, '--body', $description)
-  $createOutput = & gh @createArguments
+  $createOutput = & $ghCommand @createArguments
   if ($LASTEXITCODE -ne 0) { throw "La création de la Pull Request a échoué." }
 
   # GitHub CLI retourne normalement l'URL de la PR. Certaines configurations
   # ne retournent toutefois aucun texte : on retrouve alors la PR par sa branche.
   $url = ($createOutput | Select-Object -Last 1)
   if (-not [string]::IsNullOrWhiteSpace($url)) {
-    $pullRequest = (& gh pr view $url --json number,url,state | ConvertFrom-Json)
+    $pullRequest = (& $ghCommand pr view $url --json number,url,state | ConvertFrom-Json)
   } else {
-    $pullRequest = (& gh pr view $branch --json number,url,state | ConvertFrom-Json)
+    $pullRequest = (& $ghCommand pr view $branch --json number,url,state | ConvertFrom-Json)
   }
 }
 
@@ -138,7 +139,7 @@ if ($pullRequest.state -ne 'OPEN') {
 }
 
 Write-Host "Activation du squash auto-merge pour la PR #$($pullRequest.number)..." -ForegroundColor Cyan
-Invoke-CheckedCommand gh @('pr', 'merge', "$($pullRequest.number)", '--auto', '--squash')
+Invoke-CheckedCommand $ghCommand @('pr', 'merge', "$($pullRequest.number)", '--auto', '--squash')
 Write-Host "PR prête : $($pullRequest.url)" -ForegroundColor Green
 
 if (-not $WaitForMerge) {
@@ -149,7 +150,7 @@ if (-not $WaitForMerge) {
 $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 do {
   Start-Sleep -Seconds 15
-  $state = (& gh pr view $pullRequest.number --json state | ConvertFrom-Json).state
+  $state = (& $ghCommand pr view $pullRequest.number --json state | ConvertFrom-Json).state
   if ($state -eq 'CLOSED') {
     throw "La Pull Request a été fermée sans fusion."
   }
