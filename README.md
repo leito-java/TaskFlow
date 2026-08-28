@@ -7,9 +7,12 @@ TaskFlow est une application full-stack de gestion de tâches construite avec An
 ## Fonctionnalités actuelles
 
 - créer, consulter, modifier et supprimer une tâche ;
-- définir une description, une priorité, un statut et une échéance ;
+- définir une description, une priorité, un statut, une échéance et un projet ;
+- créer des projets personnels et y associer des tâches ;
 - filtrer les tâches à faire, en cours ou terminées ;
+- rechercher une tâche et trier la liste par priorité ou échéance ;
 - conserver les données dans PostgreSQL ;
+- créer un compte, se connecter, se déconnecter et modifier son mot de passe ;
 - gérer les états de chargement, d'erreur et de liste vide ;
 - naviguer entre accueil, liste, formulaire et page À propos.
 
@@ -132,7 +135,7 @@ Ces deux dépôts enseignent les notions étape par étape. TaskFlow est désorm
 
 ## État du produit
 
-Le socle full-stack est fonctionnel. L'authentification, l'isolation des tâches par utilisateur et le déploiement de production sont planifiés dans la [feuille de route](docs/ROADMAP.md). N'utilisez pas encore cette version pour stocker des données sensibles.
+Le socle full-stack, l'authentification et l'isolation des données par utilisateur sont fonctionnels. Le déploiement de production reste planifié dans la [feuille de route](docs/ROADMAP.md). N'utilisez pas encore cette version pour stocker des données sensibles.
 
 ## Contribution
 

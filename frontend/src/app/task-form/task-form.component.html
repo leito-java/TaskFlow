@@ -62,6 +62,14 @@
     <input id="due-date" type="date" formControlName="dueDate">
   </div>
 
+  <div class="field-group">
+    <label for="project">Projet <span>(facultatif)</span></label>
+    <select id="project" formControlName="projectId">
+      <option [ngValue]="null">Sans projet</option>
+      @for (project of projects(); track project.id) { <option [ngValue]="project.id">{{ project.name }}</option> }
+    </select>
+  </div>
+
   <!-- Le bouton principal reste désactivé tant que le formulaire est invalide. -->
   <div class="actions">
     <button class="primary-button" type="submit" [disabled]="form.invalid || busy()">

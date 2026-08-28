@@ -47,6 +47,13 @@
             <option value="dueDate">Date d’échéance</option>
           </select>
         </label>
+        <label>
+          <span>Projet</span>
+          <select [ngModel]="projectId()" (ngModelChange)="projectId.set($event === null ? null : +$event)">
+            <option [ngValue]="null">Tous les projets</option>
+            @for (project of projects(); track project.id) { <option [ngValue]="project.id">{{ project.name }}</option> }
+          </select>
+        </label>
       </div>
       @if (filteredTasks().length === 0) {
         <div class="empty-state" role="status">

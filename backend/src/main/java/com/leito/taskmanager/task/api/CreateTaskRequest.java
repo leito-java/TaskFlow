@@ -22,7 +22,8 @@ public record CreateTaskRequest(
 
         TaskStatus status,
 
-        LocalDate dueDate
+        LocalDate dueDate,
+        Long projectId
 ) {
     public CreateTaskRequest {
         if (title != null) title = title.trim();

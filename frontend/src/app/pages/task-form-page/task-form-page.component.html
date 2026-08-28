@@ -23,7 +23,7 @@
 
     <section class="form-card">
       @if (store.error()) { <p class="save-error" role="alert">{{ store.error() }}</p> }
-      <app-task-form [task]="task()" [busy]="saving()" (taskSaved)="saveTask($event)" (cancelled)="cancel()" />
+    <app-task-form [task]="task()" [projects]="projects()" [busy]="saving()" (taskSaved)="saveTask($event)" (cancelled)="cancel()" />
     </section>
   }
 </section>

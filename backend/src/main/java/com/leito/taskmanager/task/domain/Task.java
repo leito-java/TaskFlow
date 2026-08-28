@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import com.leito.taskmanager.user.domain.User;
+import com.leito.taskmanager.project.domain.Project;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -44,6 +45,10 @@ public class Task {
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     protected Task() {
         // Constructeur requis par JPA.
@@ -96,6 +101,8 @@ public class Task {
     public LocalDate getDueDate() {
         return dueDate;
     }
+    public Project getProject() { return project; }
+    public void setProject(Project project) { this.project = project; }
 
     /** L'entité protège sa propre mise à jour au lieu d'exposer des setters publics. */
     public void update(

@@ -10,6 +10,7 @@ import { TaskListPageComponent } from './pages/task-list-page/task-list-page.com
 import { TaskApiService, TaskUpdate } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { AuthService } from './auth.service';
+import { ProjectApiService } from './project-api.service';
 
 class FakeTaskApiService {
   private readonly tasks: Task[] = [
@@ -50,6 +51,7 @@ describe('routes', () => {
         provideRouter(routes),
         { provide: TaskApiService, useClass: FakeTaskApiService },
         { provide: AuthService, useValue: { isAuthenticated: () => true } },
+        { provide: ProjectApiService, useValue: { getProjects: () => of([]) } },
       ],
     });
   });

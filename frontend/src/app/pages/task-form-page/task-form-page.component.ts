@@ -5,6 +5,8 @@ import { finalize } from 'rxjs';
 import { TaskFormComponent } from '../../task-form/task-form.component';
 import { TaskDraft } from '../../task.model';
 import { TaskStore } from '../../task.store';
+import { ProjectApiService } from '../../project-api.service';
+import { Project } from '../../task.model';
 
 @Component({
   selector: 'app-task-form-page',
@@ -17,6 +19,10 @@ export class TaskFormPageComponent {
   private readonly router = inject(Router);
   protected readonly store = inject(TaskStore);
   protected readonly saving = signal(false);
+  private readonly projectApi = inject(ProjectApiService);
+  protected readonly projects = signal<Project[]>([]);
+
+  constructor() { this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) }); }
 
   // toSignal transforme les paramètres Observable du routeur en état réactif.
   private readonly paramMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });

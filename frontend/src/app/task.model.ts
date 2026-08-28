@@ -19,6 +19,7 @@ export interface TaskDraft {
   status: TaskStatus;
   // Date ISO YYYY-MM-DD, ou null lorsque l'échéance est absente.
   dueDate: string | null;
+  projectId?: number | null;
 }
 
 // Tâche enregistrée : l'API ajoute l'identité et le booléen de compatibilité.
@@ -27,4 +28,7 @@ export interface Task extends TaskDraft {
   id: number;
   // Valeur dérivée de status par Java, conservée pendant la transition.
   completed: boolean;
+  projectName?: string | null;
 }
+
+export interface Project { id: number; name: string; }

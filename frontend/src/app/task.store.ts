@@ -77,6 +77,7 @@ export class TaskStore {
       priority: current.priority,
       status: current.status === 'done' ? 'todo' : 'done',
       dueDate: current.dueDate,
+      projectId: current.projectId,
     }).subscribe({
       next: (task) => this.replaceTask(task),
       error: (error: unknown) => this.reportError(error),

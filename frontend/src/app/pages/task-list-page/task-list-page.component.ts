@@ -4,6 +4,8 @@ import { Router, RouterLink } from '@angular/router';
 import { TaskFilterComponent } from '../../task-filter/task-filter.component';
 import { TaskListComponent } from '../../task-list/task-list.component';
 import { TaskFilter } from '../../task.model';
+import { ProjectApiService } from '../../project-api.service';
+import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
 
 @Component({
@@ -18,8 +20,11 @@ export class TaskListPageComponent {
   protected readonly currentFilter = signal<TaskFilter>('all');
   protected readonly searchTerm = signal('');
   protected readonly sortBy = signal<'priority' | 'dueDate'>('priority');
+  protected readonly projectId = signal<number | null>(null);
+  protected readonly projects = signal<Project[]>([]);
+  private readonly projectApi = inject(ProjectApiService);
 
-  constructor() { this.store.loadTasks(); }
+  constructor() { this.store.loadTasks(); this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) }); }
 
   // La liste se recalcule quand le store, le filtre, la recherche ou le tri change.
   protected readonly filteredTasks = computed(() => {
@@ -28,7 +33,8 @@ export class TaskListPageComponent {
     const visibleTasks = (filter === 'all'
       ? this.store.tasks()
       : this.store.tasks().filter((task) => task.status === filter))
-      .filter((task) => task.title.toLocaleLowerCase().includes(query));
+      .filter((task) => task.title.toLocaleLowerCase().includes(query))
+      .filter((task) => this.projectId() === null || task.projectId === this.projectId());
 
     return [...visibleTasks].sort((left, right) => this.compareTasks(left, right));
   });

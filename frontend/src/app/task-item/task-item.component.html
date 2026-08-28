@@ -13,7 +13,8 @@
       @if (task().description) {
         <span class="task-description">{{ task().description }}</span>
       }
-      <span class="task-metadata">
+        <span class="task-metadata">
+        @if (task().projectName) { <span class="project">{{ task().projectName }}</span> }
         <span
           class="status"
           [class.status-todo]="task().status === 'todo'"

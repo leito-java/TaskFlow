@@ -43,7 +43,8 @@ class TaskServiceTest {
                 "  Relire le chapitre puis pratiquer  ",
                 TaskPriority.HIGH,
                 null,
-                dueDate
+                dueDate,
+                null
         ), "test@taskflow.local");
 
         assertThat(response.title()).isEqualTo("Apprendre HttpClient");

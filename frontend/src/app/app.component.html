@@ -13,6 +13,7 @@
     <nav aria-label="Navigation principale">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Accueil</a>
       @if (auth.isAuthenticated()) {
+        <a routerLink="/projects" routerLinkActive="active" ariaCurrentWhenActive="page">Projets</a>
         <a routerLink="/tasks" routerLinkActive="active" ariaCurrentWhenActive="page">
           Tâches <span class="nav-count">{{ taskCount() }}</span>
         </a>
@@ -21,11 +22,21 @@
     </nav>
 
     @if (auth.isAuthenticated()) {
-      <a class="account-link" routerLink="/security">Compte</a>
-      <button class="account-link" type="button" (click)="logout()">Déconnexion</button>
-      <a class="new-task-link" routerLink="/tasks/new">Nouvelle tâche <span aria-hidden="true">＋</span></a>
+      <div class="topbar-actions">
+        <a class="account-link" routerLink="/security">
+          <span class="account-avatar" aria-hidden="true">C</span>
+          <span>Mon compte</span>
+        </a>
+        <button class="logout-button" type="button" (click)="logout()">
+          <span aria-hidden="true">↪</span>
+          <span>Déconnexion</span>
+        </button>
+        <a class="new-task-link" routerLink="/tasks/new">Nouvelle tâche <span aria-hidden="true">＋</span></a>
+      </div>
     } @else {
-      <a class="new-task-link" routerLink="/login">Connexion</a>
+      <div class="topbar-actions">
+        <a class="new-task-link" routerLink="/login">Connexion</a>
+      </div>
     }
   </header>
 
