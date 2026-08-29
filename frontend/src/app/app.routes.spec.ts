@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -12,6 +13,7 @@ import { Task, TaskDraft } from './task.model';
 import { AuthService } from './auth.service';
 import { ProjectApiService } from './project-api.service';
 import { TaskStore } from './task.store';
+import { OnboardingService } from './onboarding.service';
 
 class FakeTaskApiService {
   private readonly tasks: Task[] = [
@@ -54,7 +56,8 @@ describe('routes', () => {
         provideRouter(routes),
         { provide: TaskApiService, useClass: FakeTaskApiService },
         { provide: AuthService, useValue: { isAuthenticated: () => true } },
-        { provide: ProjectApiService, useValue: { getProjects: () => of([]) } },
+        { provide: ProjectApiService, useValue: { projects: signal([]), getProjects: () => of([]) } },
+        { provide: OnboardingService, useValue: { completeStep: () => false } },
       ],
     });
   });

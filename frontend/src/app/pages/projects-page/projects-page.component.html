@@ -47,7 +47,7 @@
       @for (project of projects(); track project.id) {
         <li class="project-card" [style.--project-color]="project.color || '#6D5CE7'">
           <span class="project-icon" aria-hidden="true">{{ iconSymbol(project.icon) }}</span>
-          <div><strong>{{ project.name }}</strong><small>Projet personnel</small></div>
+          <div><strong>{{ project.name }}</strong><small>{{ iconLabel(project.icon) }} · Projet personnel</small></div>
           <span class="project-arrow" aria-hidden="true">→</span>
         </li>
       }

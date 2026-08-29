@@ -23,7 +23,7 @@ fieldset { margin: 22px 0 0; padding: 0; border: 0; }
 .color-picker label.selected { border-color: var(--project-color); }
 .color-picker span { width: 24px; height: 24px; border-radius: 50%; background: var(--project-color); }
 .project-preview { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-top: 24px; padding: 14px; border: 1px solid color-mix(in srgb, var(--project-color) 24%, white); border-radius: 15px; background: color-mix(in srgb, var(--project-color) 6%, white); }
-.project-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: color-mix(in srgb, var(--project-color) 14%, white); color: var(--project-color); font-size: .95rem; font-weight: 850; }
+.project-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: color-mix(in srgb, var(--project-color) 14%, white); color: var(--project-color); font-size: 1.08rem; font-weight: 850; }
 .project-preview div { display: grid; gap: 3px; }
 .project-preview small { color: #8791a2; font-size: .65rem; }
 .project-preview strong { color: #253047; font-size: .84rem; }

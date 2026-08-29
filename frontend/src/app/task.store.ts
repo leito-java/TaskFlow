@@ -85,7 +85,7 @@ export class TaskStore {
   }
 
   /** Termine une tâche, ou la replace à faire lorsqu'elle était terminée. */
-  toggleTask(id: number): void {
+  toggleTask(id: number, onSuccess?: (task: Task) => void): void {
     const current = this.taskById(id);
     if (!current) return;
     this.clearError();
@@ -104,6 +104,7 @@ export class TaskStore {
         } else {
           this.notifications.success(`« ${task.title} » replacée dans les tâches à faire.`);
         }
+        onSuccess?.(task);
       },
       error: (error: unknown) => this.reportError(error),
     });

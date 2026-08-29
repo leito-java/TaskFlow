@@ -1,8 +1,11 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { ProjectIcon, TaskPriority, TaskStatus } from './task.model';
 
 export interface OnboardingStep { eyebrow: string; title: string; description: string; route: string; action: string; target?: string; }
+export interface OnboardingProjectDraft { name: string; icon: ProjectIcon; color: string; }
+export interface OnboardingTaskDraft { title: string; description: string; priority: TaskPriority; status: TaskStatus; dueDate: string; projectId: number | null; }
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
@@ -10,6 +13,8 @@ export class OnboardingService {
   private readonly router = inject(Router);
   readonly open = signal(false);
   readonly stepIndex = signal(0);
+  readonly projectDraft = signal<OnboardingProjectDraft>({ name: '', icon: 'work', color: '#6D5CE7' });
+  readonly taskDraft = signal<OnboardingTaskDraft>({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
   readonly steps: OnboardingStep[] = [
     { eyebrow: 'Bienvenue', title: 'Prenez TaskFlow en main', description: 'Vous allez réellement créer un projet, une tâche et votre premier focus. Les zones à utiliser seront mises en évidence.', route: '/projects', action: 'Commencer le parcours' },
     { eyebrow: 'Étape 1 sur 4', title: 'Créez un projet', description: 'Utilisez la zone éclairée : saisissez un nom, choisissez une icône et une couleur, puis cliquez sur Créer le projet.', route: '/projects', action: "J’ai créé mon projet", target: 'project-creator' },
@@ -25,8 +30,18 @@ export class OnboardingService {
     });
   }
 
-  start(): void { this.clearHighlight(); this.stepIndex.set(0); this.open.set(true); }
-  close(): void { this.clearHighlight(); this.rememberCompletion(); this.open.set(false); }
+  start(): void { this.clearHighlight(); this.clearDrafts(); this.stepIndex.set(0); this.open.set(true); }
+  close(): void { this.clearHighlight(); this.rememberCompletion(); this.open.set(false); this.clearDrafts(); }
+
+  updateProjectDraft(change: Partial<OnboardingProjectDraft>): void { this.projectDraft.update((draft) => ({ ...draft, ...change })); }
+  updateTaskDraft(change: Partial<OnboardingTaskDraft>): void { this.taskDraft.update((draft) => ({ ...draft, ...change })); }
+
+  /** Avance seulement si l'action réussie correspond à l'étape actuellement affichée. */
+  completeStep(target: string): boolean {
+    if (!this.open() || this.steps[this.stepIndex()]?.target !== target) return false;
+    this.next();
+    return true;
+  }
 
   next(): void {
     const current = this.stepIndex();
@@ -56,6 +71,10 @@ export class OnboardingService {
   }
 
   private clearHighlight(): void { document.querySelector('.tour-highlight')?.classList.remove('tour-highlight'); }
+  private clearDrafts(): void {
+    this.projectDraft.set({ name: '', icon: 'work', color: '#6D5CE7' });
+    this.taskDraft.set({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
+  }
 
   private rememberCompletion(): void {
     const email = this.auth.email();

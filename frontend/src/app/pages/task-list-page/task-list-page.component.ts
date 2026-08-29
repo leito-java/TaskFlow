@@ -9,6 +9,7 @@ import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
 import { DailyPriority, DailyPriorityApiService } from '../../daily-priority-api.service';
 import { ApiErrorService } from '../../api-error.service';
+import { OnboardingService } from '../../onboarding.service';
 
 @Component({
   selector: 'app-task-list-page',
@@ -31,6 +32,7 @@ export class TaskListPageComponent {
   private readonly projectApi = inject(ProjectApiService);
   private readonly dailyPriorityApi = inject(DailyPriorityApiService);
   private readonly apiErrors = inject(ApiErrorService);
+  private readonly onboarding = inject(OnboardingService);
   protected readonly dailyPriorities = signal<DailyPriority[]>([]);
   protected readonly priorityError = signal<string | null>(null);
   protected readonly completionPercentage = computed(() => {
@@ -52,7 +54,13 @@ export class TaskListPageComponent {
   }
 
   protected addDailyPriority(taskId: number): void {
-    this.dailyPriorityApi.add(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Vous pouvez choisir au maximum trois priorités.')) });
+    this.dailyPriorityApi.add(taskId).subscribe({
+      next: () => {
+        this.loadDailyPriorities();
+        this.onboarding.completeStep('daily-priorities');
+      },
+      error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Vous pouvez choisir au maximum trois priorités.')),
+    });
   }
 
   protected removeDailyPriority(taskId: number): void {
@@ -101,6 +109,10 @@ export class TaskListPageComponent {
   protected updateProject(value: number | null): void { this.projectId.set(value); this.currentPage.set(1); }
   protected previousPage(): void { this.currentPage.update((page) => Math.max(1, page - 1)); }
   protected nextPage(): void { this.currentPage.update((page) => Math.min(this.pageCount(), page + 1)); }
+
+  protected toggleTask(id: number): void {
+    this.store.toggleTask(id, () => this.onboarding.completeStep('task-progress'));
+  }
 
   protected editTask(id: number): void {
     // La navigation construit l'URL dynamique /tasks/:id/edit.

@@ -130,7 +130,7 @@
       } @else {
         <app-task-list
           [tasks]="paginatedTasks()"
-          (toggled)="store.toggleTask($event)"
+          (toggled)="toggleTask($event)"
           (deleted)="requestDeletion($event)"
           (editRequested)="editTask($event)"
         />
