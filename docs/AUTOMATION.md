@@ -1,5 +1,7 @@
 # Automatiser le workflow de Pull Request
 
+> Les erreurs réutilisables et leurs mesures préventives sont consignées dans [INCIDENTS.md](INCIDENTS.md).
+
 Les scripts PowerShell automatisent le workflow après le commit : vérifications, push, création de Pull Request, activation d'Auto-merge et synchronisation locale.
 
 ## Prérequis
@@ -39,3 +41,5 @@ Sans `-WaitForMerge`, lancez ensuite manuellement :
 ## Protections
 
 Les scripts s'arrêtent si la branche actuelle est `main` ou si des fichiers ne sont pas commités. Ils n'exécutent jamais `git add` ni `git commit` automatiquement.
+
+Lorsqu'une commande échoue, `submit-pr.ps1` conserve son diagnostic dans `.taskflow/logs/last-submit-pr-error.log`. Ce fichier local est ignoré par Git. Après analyse, les enseignements durables doivent être ajoutés à `docs/INCIDENTS.md`.

@@ -12,8 +12,22 @@ Set-StrictMode -Version Latest
 
 function Invoke-CheckedCommand {
   param([string]$Command, [string[]]$Arguments)
-  & $Command @Arguments
-  if ($LASTEXITCODE -ne 0) {
+  $capturedOutput = @()
+  & $Command @Arguments 2>&1 | Tee-Object -Variable capturedOutput
+  $exitCode = $LASTEXITCODE
+  if ($exitCode -ne 0) {
+    $logDirectory = Join-Path $repositoryRoot '.taskflow\logs'
+    New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+    $logPath = Join-Path $logDirectory 'last-submit-pr-error.log'
+    @(
+      "Date : $((Get-Date).ToString('o'))"
+      "Branche : $branch"
+      "Commande : $Command $($Arguments -join ' ')"
+      'Sortie :'
+      ($capturedOutput | Out-String).TrimEnd()
+    ) | Set-Content -LiteralPath $logPath -Encoding utf8
+    Write-Host "Diagnostic conservé dans $logPath" -ForegroundColor Yellow
+    Write-Host "Après résolution, documente la cause durable dans docs\INCIDENTS.md." -ForegroundColor Yellow
     throw "La commande '$Command $($Arguments -join ' ')' a échoué."
   }
 }
