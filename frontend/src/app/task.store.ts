@@ -1,10 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
 import { TaskApiService } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { AuthService } from './auth.service';
 import { NotificationService } from './notification.service';
+import { ApiErrorService } from './api-error.service';
 
 /** État d'interface partagé ; la source persistante est maintenant l'API. */
 @Injectable({ providedIn: 'root' })
@@ -12,6 +12,7 @@ export class TaskStore {
   private readonly api = inject(TaskApiService);
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
+  private readonly apiErrors = inject(ApiErrorService);
   // L'état reste privé : les composants peuvent le lire, mais pas le modifier directement.
   private readonly taskState = signal<Task[]>([]);
   private readonly loadingState = signal(false);
@@ -28,7 +29,22 @@ export class TaskStore {
   readonly remainingTaskCount = computed(() => this.todoTaskCount() + this.inProgressTaskCount());
 
   constructor() {
+    // Le premier chargement reste immédiat : les pages et les tests disposent
+    // des données dès la création du store.
     if (this.auth.isAuthenticated()) this.loadTasks();
+
+    // Ensuite, le signal d'authentification sert uniquement à purger la mémoire
+    // lorsque la session expire ou que l'utilisateur se déconnecte.
+    effect(() => {
+      if (!this.auth.isAuthenticated()) this.clearUserData();
+    });
+  }
+
+  /** Efface immédiatement les données de l'utilisateur précédent de la mémoire du navigateur. */
+  clearUserData(): void {
+    this.taskState.set([]);
+    this.loadingState.set(false);
+    this.errorState.set(null);
   }
 
   /** Charge la liste depuis Spring Boot et met à jour les états d'interface. */
@@ -69,7 +85,7 @@ export class TaskStore {
   }
 
   /** Termine une tâche, ou la replace à faire lorsqu'elle était terminée. */
-  toggleTask(id: number): void {
+  toggleTask(id: number, onSuccess?: (task: Task) => void): void {
     const current = this.taskById(id);
     if (!current) return;
     this.clearError();
@@ -81,7 +97,15 @@ export class TaskStore {
       dueDate: current.dueDate,
       projectId: current.projectId,
     }).subscribe({
-      next: (task) => this.replaceTask(task),
+      next: (task) => {
+        this.replaceTask(task);
+        if (task.status === 'done') {
+          this.notifications.success(`« ${task.title} » terminée — progression : ${this.completedTaskCount()} sur ${this.taskCount()}.`);
+        } else {
+          this.notifications.success(`« ${task.title} » replacée dans les tâches à faire.`);
+        }
+        onSuccess?.(task);
+      },
       error: (error: unknown) => this.reportError(error),
     });
   }
@@ -112,14 +136,7 @@ export class TaskStore {
   }
 
   private reportError(error: unknown): void {
-    let message: string;
-    if (error instanceof HttpErrorResponse && error.status === 0) {
-      message = "Impossible de joindre l'API. Vérifiez que Spring Boot est lancé sur le port 8080.";
-    } else if (error instanceof HttpErrorResponse && typeof error.error?.detail === 'string') {
-      message = error.error.detail;
-    } else {
-      message = "Une erreur inattendue s'est produite. Réessayez.";
-    }
+    const message = this.apiErrors.message(error);
     this.errorState.set(message);
     this.notifications.error(message);
   }

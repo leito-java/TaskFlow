@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../auth.service';
+import { ApiErrorService } from '../../api-error.service';
 
 /** Écran privé : le mot de passe courant est toujours demandé avant un changement. */
 @Component({
@@ -12,6 +13,7 @@ import { AuthService } from '../../auth.service';
 export class SecurityPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly apiErrors = inject(ApiErrorService);
   protected readonly saving = signal(false);
   protected readonly message = signal<string | null>(null);
   protected readonly error = signal<string | null>(null);
@@ -32,9 +34,10 @@ export class SecurityPageComponent {
     const { currentPassword, newPassword } = this.form.getRawValue();
     this.auth.changePassword({ currentPassword, newPassword }).subscribe({
       next: () => { this.form.reset(); this.message.set('Mot de passe modifié avec succès.'); },
-      error: (response: { error?: { detail?: unknown } }) => this.error.set(
-        typeof response.error?.detail === 'string' ? response.error.detail : 'Modification impossible. Vérifiez votre mot de passe actuel.',
-      ),
+      error: (response: unknown) => {
+        this.saving.set(false);
+        this.error.set(this.apiErrors.message(response, 'Modification impossible. Vérifiez votre mot de passe actuel.'));
+      },
       complete: () => this.saving.set(false),
     });
   }

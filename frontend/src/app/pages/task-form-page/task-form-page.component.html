@@ -21,9 +21,10 @@
       </span>
     </header>
 
-    <section class="form-card">
+    <section class="form-card" data-tour="task-creator">
       @if (store.error()) { <p class="save-error" role="alert">{{ store.error() }}</p> }
-    <app-task-form [task]="task()" [projects]="projects()" [busy]="saving()" (taskSaved)="saveTask($event)" (cancelled)="cancel()" />
+      @if (projectError()) { <p class="save-error" role="alert">{{ projectError() }}</p> }
+      <app-task-form [task]="task()" [projects]="projects()" [busy]="saving()" (taskSaved)="saveTask($event)" (cancelled)="cancel()" />
     </section>
   }
 </section>

@@ -1,12 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { TaskDraft } from '../task.model';
+import { OnboardingService } from '../onboarding.service';
 import { TaskFormComponent } from './task-form.component';
 
 describe('TaskFormComponent', () => {
   let fixture: ComponentFixture<TaskFormComponent>;
+  let guideOpen: ReturnType<typeof signal<boolean>>;
+  let guideDraft: ReturnType<typeof signal<{ title: string; description: string; priority: 'medium'; status: 'todo'; dueDate: string; projectId: number | null }>>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [TaskFormComponent] });
+    guideOpen = signal(false);
+    guideDraft = signal({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
+    TestBed.configureTestingModule({
+      imports: [TaskFormComponent],
+      providers: [{ provide: OnboardingService, useValue: {
+        open: guideOpen,
+        taskDraft: guideDraft,
+        updateTaskDraft: (change: object) => guideDraft.update((draft) => ({ ...draft, ...change })),
+      } }],
+    });
     fixture = TestBed.createComponent(TaskFormComponent);
     fixture.detectChanges();
   });
@@ -20,6 +33,15 @@ describe('TaskFormComponent', () => {
     fixture.detectChanges();
 
     expect(button.disabled).toBe(true);
+  });
+
+  it('restaure le brouillon lorsque l’utilisateur revient dans le guide', () => {
+    guideDraft.set({ title: 'Préparer le module Angular', description: 'Chapitre routing', priority: 'medium', status: 'todo', dueDate: '2026-09-10', projectId: 7 });
+    guideOpen.set(true);
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement.querySelector('#task') as HTMLInputElement).value).toBe('Préparer le module Angular');
+    expect((fixture.nativeElement.querySelector('#due-date') as HTMLInputElement).value).toBe('2026-09-10');
   });
 
   it('affiche une erreur après interaction avec un titre invalide', () => {

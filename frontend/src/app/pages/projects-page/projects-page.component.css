@@ -1,18 +1,41 @@
 :host { display: block; }
-.projects-page { width: min(760px, calc(100% - 40px)); margin: 54px auto 64px; }
+.projects-page { width: min(900px, calc(100% - 40px)); margin: 54px auto 64px; }
 header p { margin: 0 0 7px; color: #6d5ce7; font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 header h1 { margin: 0; color: #172033; font-size: clamp(2.25rem, 5vw, 3.4rem); letter-spacing: -.05em; }
 header > span { display: block; margin-top: 11px; color: #64748b; line-height: 1.5; }
-form, .projects-list { margin-top: 28px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 18px; background: rgb(255 255 255 / 82%); box-shadow: 0 16px 38px rgb(15 23 42 / 6%); }
-label { display: block; margin-bottom: 8px; color: #334155; font-size: .8rem; font-weight: 750; }
-.project-form-actions { display: flex; gap: 10px; }
-input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #334155; font: inherit; }
-button { min-height: 44px; padding: 0 14px; border: 0; border-radius: 10px; background: #172033; color: #fff; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 750; }
-button:disabled { cursor: not-allowed; opacity: .55; }
+.project-creator, .projects-list { margin-top: 28px; padding: 28px; border: 1px solid #e2e8f0; border-radius: 22px; background: rgb(255 255 255 / 86%); box-shadow: 0 18px 44px rgb(15 23 42 / 7%); }
+.form-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.form-heading > span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: #efedff; color: #6253cf; font-weight: 800; }
+.form-heading strong { color: #1e293b; }
+.form-heading p { margin: 3px 0 0; color: #8490a3; font-size: .73rem; }
+label, legend { color: #334155; font-size: .76rem; font-weight: 750; }
+.name-row { margin-top: 7px; }
+.name-row input { width: 100%; box-sizing: border-box; min-height: 46px; padding: 0 13px; border: 1px solid #cbd5e1; border-radius: 11px; background: #fff; color: #334155; font: inherit; }
+fieldset { margin: 22px 0 0; padding: 0; border: 0; }
+.icon-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-top: 9px; }
+.icon-picker label { display: grid; place-items: center; gap: 5px; min-height: 68px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; cursor: pointer; }
+.icon-picker label:hover, .icon-picker label.selected { border-color: #8273eb; background: #f5f3ff; box-shadow: 0 0 0 2px rgb(109 92 231 / 10%); }
+.icon-picker input, .color-picker input { position: absolute; opacity: 0; pointer-events: none; }
+.icon-picker span { color: #334155; font-size: 1.15rem; font-weight: 800; }
+.icon-picker small { color: #64748b; font-size: .63rem; }
+.color-picker { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.color-picker label { display: grid; place-items: center; width: 34px; height: 34px; border: 2px solid transparent; border-radius: 50%; cursor: pointer; }
+.color-picker label.selected { border-color: var(--project-color); }
+.color-picker span { width: 24px; height: 24px; border-radius: 50%; background: var(--project-color); }
+.project-preview { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-top: 24px; padding: 14px; border: 1px solid color-mix(in srgb, var(--project-color) 24%, white); border-radius: 15px; background: color-mix(in srgb, var(--project-color) 6%, white); }
+.project-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: color-mix(in srgb, var(--project-color) 14%, white); color: var(--project-color); font-size: 1.08rem; font-weight: 850; }
+.project-preview div { display: grid; gap: 3px; }
+.project-preview small { color: #8791a2; font-size: .65rem; }
+.project-preview strong { color: #253047; font-size: .84rem; }
+button { min-height: 42px; padding: 0 15px; border: 0; border-radius: 11px; background: #172033; color: #fff; cursor: pointer; font: inherit; font-size: .75rem; font-weight: 750; }
+button:disabled { cursor: not-allowed; opacity: .5; }
 .error { margin: 14px 0 0; padding: 11px; border-radius: 10px; background: #fff1f2; color: #9f1239; font-size: .8rem; }
-.projects-list h2 { margin: 0 0 14px; color: #172033; font-size: 1.1rem; }
-ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-li { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #f8fafc; color: #334155; font-size: .86rem; font-weight: 650; }
-li span { color: #6253cf; }
-.empty-state { justify-content: center; border: 1px dashed #cbd5e1; color: #64748b; text-align: center; font-weight: 500; }
-@media (max-width: 560px) { .projects-page { width: min(100% - 24px, 760px); margin-top: 38px; } form, .projects-list { padding: 18px; } .project-form-actions { flex-direction: column; } button { width: 100%; } }
+.projects-list h2 { margin: 0 0 16px; color: #172033; font-size: 1.1rem; }
+.project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; margin: 0; padding: 0; list-style: none; }
+.project-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; min-height: 64px; padding: 10px 13px; border: 1px solid #e8eaf0; border-left: 4px solid var(--project-color); border-radius: 14px; background: #fff; }
+.project-card div { display: grid; gap: 4px; }
+.project-card strong { color: #293449; font-size: .82rem; }
+.project-card small { color: #929bab; font-size: .65rem; }
+.project-arrow { color: #a2aabb; }
+.empty-state { grid-column: 1 / -1; padding: 28px; border: 1px dashed #cbd5e1; border-radius: 14px; color: #64748b; text-align: center; }
+@media (max-width: 620px) { .projects-page { width: min(100% - 24px, 900px); margin-top: 38px; } .project-creator, .projects-list { padding: 20px 17px; } .icon-picker { grid-template-columns: repeat(2, 1fr); } .project-grid { grid-template-columns: 1fr; } .project-preview { grid-template-columns: auto 1fr; } .project-preview button { grid-column: 1 / -1; width: 100%; } }

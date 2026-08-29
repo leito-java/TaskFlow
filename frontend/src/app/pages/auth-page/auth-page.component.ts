@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth.service';
+import { ApiErrorService } from '../../api-error.service';
 
 @Component({
   selector: 'app-auth-page',
@@ -13,6 +14,7 @@ export class AuthPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly apiErrors = inject(ApiErrorService);
   private readonly formBuilder = inject(FormBuilder);
   protected readonly isRegistration = computed(() => this.route.snapshot.routeConfig?.path === 'register');
   protected readonly information = computed(() =>
@@ -35,13 +37,7 @@ export class AuthPageComponent {
       next: () => this.router.navigateByUrl('/tasks'),
       error: (response: unknown) => {
         this.submitting.set(false);
-        const httpError = response as { status?: number; error?: { detail?: unknown } };
-        const detail = httpError.error?.detail;
-        this.error.set(
-          typeof detail === 'string'
-            ? detail
-            : `Connexion impossible (code HTTP ${httpError.status ?? 'inconnu'}).`,
-        );
+        this.error.set(this.apiErrors.message(response, 'Connexion impossible. Vérifiez vos informations puis réessayez.'));
       },
       complete: () => this.submitting.set(false),
     });

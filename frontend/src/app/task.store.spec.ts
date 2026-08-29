@@ -4,6 +4,7 @@ import { TaskApiService, TaskUpdate } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { TaskStore } from './task.store';
 import { AuthService } from './auth.service';
+import { NotificationService } from './notification.service';
 
 class FakeTaskApiService {
   private data: Task[] = [
@@ -51,6 +52,7 @@ class FakeTaskApiService {
 
 describe('TaskStore', () => {
   let store: TaskStore;
+  let notifications: NotificationService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -60,6 +62,7 @@ describe('TaskStore', () => {
       ],
     });
     store = TestBed.inject(TaskStore);
+    notifications = TestBed.inject(NotificationService);
   });
 
   it('charge la liste et expose ses compteurs dérivés', () => {
@@ -101,11 +104,27 @@ describe('TaskStore', () => {
   it('bascule puis supprime une tâche', () => {
     store.toggleTask(2);
     expect(store.taskById(2)?.status).toBe('done');
+    expect(notifications.current()?.message).toContain('progression : 2 sur 2');
     expect(store.taskById(2)?.description).toBe('Découper la page');
     expect(store.taskById(2)?.dueDate).toBe('2026-09-15');
 
     store.deleteTask(2);
     expect(store.taskById(2)).toBeNull();
     expect(store.taskCount()).toBe(1);
+  });
+
+  it('explique lorsqu’une tâche terminée est replacée à faire', () => {
+    store.toggleTask(1);
+
+    expect(store.taskById(1)?.status).toBe('todo');
+    expect(notifications.current()?.message).toContain('replacée dans les tâches à faire');
+  });
+
+  it('efface toutes les données utilisateur de la mémoire', () => {
+    store.clearUserData();
+
+    expect(store.tasks()).toEqual([]);
+    expect(store.taskCount()).toBe(0);
+    expect(store.error()).toBeNull();
   });
 });

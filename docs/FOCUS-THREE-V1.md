@@ -29,6 +29,11 @@ La fonctionnalité s'adresse d'abord aux étudiants, juniors développeurs et fr
 - Retirer une priorité ne supprime jamais la tâche.
 - Les tâches d'un projet peuvent devenir des priorités ; les projets ne sont pas modifiés.
 - À minuit, le nouveau jour commence avec zéro priorité. Les tâches non terminées restent disponibles dans la liste générale.
+- Une priorité non terminée n'est jamais reconduite automatiquement.
+- Le lendemain, TaskFlow propose au maximum deux priorités inachevées de la veille avec l'action `Reprendre`.
+- L'utilisateur peut reprendre zéro, une ou deux suggestions ; chaque choix occupe une place parmi les trois priorités du nouveau jour.
+- Une suggestion ignorée reste une tâche normale dans son projet et n'est ni supprimée ni modifiée.
+- La date d'échéance aide à suggérer les tâches urgentes, mais ne décide jamais automatiquement du focus de l'utilisateur.
 
 ### Expérience attendue
 

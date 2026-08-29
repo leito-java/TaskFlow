@@ -8,14 +8,28 @@
     <a routerLink="/tasks/new"><span aria-hidden="true">＋</span> Ajouter une tâche</a>
   </header>
 
-  <section class="task-summary" aria-label="Résumé">
-    <span><strong>{{ store.taskCount() }}</strong> au total</span>
-    <span><strong>{{ store.todoTaskCount() }}</strong> à faire</span>
-    <span><strong>{{ store.inProgressTaskCount() }}</strong> en cours</span>
-    <span><strong>{{ store.completedTaskCount() }}</strong> terminées</span>
+  <section class="task-summary" aria-labelledby="task-progress-title" data-tour="task-progress">
+    <div class="summary-heading">
+      <div>
+        <p>Progression globale</p>
+        <h2 id="task-progress-title">
+          {{ store.completedTaskCount() }} tâche{{ store.completedTaskCount() > 1 ? 's' : '' }} terminée{{ store.completedTaskCount() > 1 ? 's' : '' }} sur {{ store.taskCount() }}
+        </h2>
+      </div>
+      <strong class="completion-percentage">{{ completionPercentage() }} %</strong>
+    </div>
+    <div class="progress-track" role="progressbar" aria-label="Tâches terminées" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="completionPercentage()">
+      <span [style.width.%]="completionPercentage()"></span>
+    </div>
+    <div class="summary-details">
+      <span><strong>{{ store.taskCount() }}</strong> au total</span>
+      <span><strong>{{ store.todoTaskCount() }}</strong> à faire</span>
+      <span><strong>{{ store.inProgressTaskCount() }}</strong> en cours</span>
+      <span class="completed-detail"><strong>{{ store.completedTaskCount() }}</strong> terminée{{ store.completedTaskCount() > 1 ? 's' : '' }}</span>
+    </div>
   </section>
 
-  <section class="daily-priorities" aria-labelledby="daily-priorities-title">
+  <section class="daily-priorities" aria-labelledby="daily-priorities-title" data-tour="daily-priorities">
     <div class="priority-heading">
       <div>
         <p>Focus quotidien</p>
@@ -68,7 +82,7 @@
     }
   </section>
 
-  <section class="tasks-panel" aria-label="Liste des tâches">
+  <section class="tasks-panel" aria-label="Liste des tâches" data-tour="task-list">
     <div class="panel-heading">
       <div>
         <p>Votre progression</p>
@@ -87,22 +101,22 @@
     @if (store.loading()) {
       <div class="api-message loading-message" role="status">Chargement des tâches depuis l'API…</div>
     } @else {
-      <app-task-filter [activeFilter]="currentFilter()" (filterChanged)="currentFilter.set($event)" />
+      <app-task-filter [activeFilter]="currentFilter()" (filterChanged)="updateFilter($event)" />
       <div class="task-tools" aria-label="Rechercher et trier">
         <label>
           <span>Rechercher</span>
-          <input type="search" placeholder="Rechercher une tâche…" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
+          <input type="search" placeholder="Rechercher une tâche…" [ngModel]="searchTerm()" (ngModelChange)="updateSearch($event)">
         </label>
         <label>
           <span>Trier par</span>
-          <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+          <select [ngModel]="sortBy()" (ngModelChange)="updateSort($event)">
             <option value="priority">Priorité</option>
             <option value="dueDate">Date d’échéance</option>
           </select>
         </label>
         <label>
           <span>Projet</span>
-          <select [ngModel]="projectId()" (ngModelChange)="projectId.set($event === null ? null : +$event)">
+          <select [ngModel]="projectId()" (ngModelChange)="updateProject($event === null ? null : +$event)">
             <option [ngValue]="null">Tous les projets</option>
             @for (project of projects(); track project.id) { <option [ngValue]="project.id">{{ project.name }}</option> }
           </select>
@@ -115,11 +129,19 @@
         </div>
       } @else {
         <app-task-list
-          [tasks]="filteredTasks()"
-          (toggled)="store.toggleTask($event)"
+          [tasks]="paginatedTasks()"
+          (toggled)="toggleTask($event)"
           (deleted)="requestDeletion($event)"
           (editRequested)="editTask($event)"
         />
+        <nav class="pagination" aria-label="Pagination des tâches">
+          <span>{{ firstDisplayedTask() }}–{{ lastDisplayedTask() }} sur {{ filteredTasks().length }} tâche{{ filteredTasks().length > 1 ? 's' : '' }}</span>
+          <div>
+            <button type="button" (click)="previousPage()" [disabled]="displayedPage() === 1" aria-label="Afficher la page précédente">← Précédent</button>
+            <strong aria-current="page">Page {{ displayedPage() }} sur {{ pageCount() }}</strong>
+            <button type="button" (click)="nextPage()" [disabled]="displayedPage() === pageCount()" aria-label="Afficher la page suivante">Suivant →</button>
+          </div>
+        </nav>
       }
     }
   </section>

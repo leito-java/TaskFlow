@@ -1,0 +1,21 @@
+@if (onboarding.open()) {
+  <div class="tour-backdrop" [class.interactive]="onboarding.stepIndex() > 0">
+    <section class="tour-dialog" role="dialog" [attr.aria-modal]="onboarding.stepIndex() === 0 ? 'true' : null" aria-labelledby="tour-title">
+      <button class="tour-close" type="button" (click)="onboarding.close()" aria-label="Passer le guide">×</button>
+      @if (onboarding.stepIndex() === 0) { <div class="tour-visual" aria-hidden="true"><span>✓</span><i></i><i></i><i></i></div> }
+      @if (onboarding.steps[onboarding.stepIndex()]; as step) {
+        <p>{{ step.eyebrow }}</p>
+        <h2 id="tour-title">{{ step.title }}</h2>
+        <span>{{ step.description }}</span>
+        <div class="tour-progress" aria-label="Progression du guide">
+          @for (item of onboarding.steps; track $index) { <i [class.active]="$index <= onboarding.stepIndex()"></i> }
+        </div>
+        <div class="tour-actions">
+          @if (onboarding.stepIndex() > 0) { <button class="secondary" type="button" (click)="onboarding.previous()">Retour</button> }
+          <button class="primary" type="button" (click)="onboarding.next()">{{ step.action }}</button>
+        </div>
+        <button class="skip" type="button" (click)="onboarding.close()">Passer le guide pour le moment</button>
+      }
+    </section>
+  </div>
+}

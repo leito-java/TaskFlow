@@ -33,3 +33,13 @@ textarea { outline: none; }
   background: #dcd7ff;
   color: #282052;
 }
+
+.tour-highlight {
+  position: relative;
+  z-index: 55;
+  border-color: #6d5ce7 !important;
+  box-shadow: 0 0 0 5px rgb(109 92 231 / 22%), 0 24px 60px rgb(38 32 78 / 18%) !important;
+  animation: tour-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes tour-pulse { 50% { box-shadow: 0 0 0 9px rgb(109 92 231 / 12%), 0 24px 60px rgb(38 32 78 / 18%); } }

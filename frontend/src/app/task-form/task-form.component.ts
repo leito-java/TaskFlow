@@ -1,9 +1,10 @@
 // Outils Angular : composant, réaction à un signal, entrées, sorties et état local.
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal, untracked } from '@angular/core';
 // Outils des formulaires réactifs et validateurs fournis par Angular.
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 // Types métier utilisés par le formulaire.
 import { Project, Task, TaskDraft, TaskPriority, TaskStatus } from '../task.model';
+import { OnboardingService } from '../onboarding.service';
 
 // Déclaration du composant standalone responsable du formulaire.
 @Component({
@@ -17,6 +18,7 @@ import { Project, Task, TaskDraft, TaskPriority, TaskStatus } from '../task.mode
   styleUrl: './task-form.component.css',
 })
 export class TaskFormComponent {
+  private readonly onboarding = inject(OnboardingService);
   // Une tâche présente signifie que le formulaire est en mode édition.
   readonly task = input<Task | null>(null);
   readonly projects = input<Project[]>([]);
@@ -54,13 +56,25 @@ export class TaskFormComponent {
       // Une nouvelle tâche à éditer réinitialise l'état de soumission.
       this.submitted.set(false);
       // Préremplit le formulaire en édition ou le vide en création.
-      this.form.reset({
-        title: task?.title ?? '',
-        description: task?.description ?? '',
-        priority: task?.priority ?? 'medium',
-        status: task?.status ?? 'todo',
-        dueDate: task?.dueDate ?? '',
-        projectId: task?.projectId ?? null,
+      const guideDraft = !task && this.onboarding.open() ? untracked(() => this.onboarding.taskDraft()) : null;
+      this.form.reset(guideDraft ?? {
+          title: task?.title ?? '',
+          description: task?.description ?? '',
+          priority: task?.priority ?? 'medium',
+          status: task?.status ?? 'todo',
+          dueDate: task?.dueDate ?? '',
+          projectId: task?.projectId ?? null,
+        });
+    });
+    this.form.valueChanges.subscribe((value) => {
+      if (!this.onboarding.open() || this.task()) return;
+      this.onboarding.updateTaskDraft({
+        title: value.title ?? '',
+        description: value.description ?? '',
+        priority: value.priority ?? 'medium',
+        status: value.status ?? 'todo',
+        dueDate: value.dueDate ?? '',
+        projectId: value.projectId ?? null,
       });
     });
   }
@@ -81,7 +95,7 @@ export class TaskFormComponent {
       projectId: value.projectId,
     });
     // Après une création, prépare le formulaire pour une nouvelle tâche.
-    if (!this.task()) {
+    if (!this.task() && !this.onboarding.open()) {
       this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
     }
     // Masque les messages liés à la tentative précédente.

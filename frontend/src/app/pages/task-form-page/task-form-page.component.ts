@@ -6,8 +6,9 @@ import { TaskFormComponent } from '../../task-form/task-form.component';
 import { TaskDraft } from '../../task.model';
 import { TaskStore } from '../../task.store';
 import { ProjectApiService } from '../../project-api.service';
-import { Project } from '../../task.model';
 import { NotificationService } from '../../notification.service';
+import { ApiErrorService } from '../../api-error.service';
+import { OnboardingService } from '../../onboarding.service';
 
 @Component({
   selector: 'app-task-form-page',
@@ -21,10 +22,18 @@ export class TaskFormPageComponent {
   protected readonly store = inject(TaskStore);
   protected readonly saving = signal(false);
   private readonly projectApi = inject(ProjectApiService);
+  private readonly apiErrors = inject(ApiErrorService);
   private readonly notifications = inject(NotificationService);
-  protected readonly projects = signal<Project[]>([]);
+  private readonly onboarding = inject(OnboardingService);
+  protected readonly projects = this.projectApi.projects;
+  protected readonly projectError = signal<string | null>(null);
 
-  constructor() { this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) }); }
+  constructor() {
+    this.projectApi.getProjects().subscribe({
+      next: () => this.projectError.set(null),
+      error: (error: unknown) => this.projectError.set(this.apiErrors.message(error, 'Impossible de charger vos projets.')),
+    });
+  }
 
   // toSignal transforme les paramètres Observable du routeur en état réactif.
   private readonly paramMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
@@ -50,7 +59,7 @@ export class TaskFormPageComponent {
     request.pipe(finalize(() => this.saving.set(false))).subscribe({
       next: () => {
         this.notifications.success(id === null ? 'Tâche créée avec succès.' : 'Tâche modifiée avec succès.');
-        void this.router.navigate(['/tasks']);
+        if (!this.onboarding.completeStep('task-creator')) void this.router.navigate(['/tasks']);
       },
     });
   }

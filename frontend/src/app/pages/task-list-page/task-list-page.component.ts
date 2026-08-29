@@ -8,6 +8,8 @@ import { ProjectApiService } from '../../project-api.service';
 import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
 import { DailyPriority, DailyPriorityApiService } from '../../daily-priority-api.service';
+import { ApiErrorService } from '../../api-error.service';
+import { OnboardingService } from '../../onboarding.service';
 
 @Component({
   selector: 'app-task-list-page',
@@ -22,13 +24,21 @@ export class TaskListPageComponent {
   protected readonly searchTerm = signal('');
   protected readonly sortBy = signal<'priority' | 'dueDate'>('priority');
   protected readonly projectId = signal<number | null>(null);
+  protected readonly currentPage = signal(1);
+  protected readonly pageSize = 20;
   protected readonly projects = signal<Project[]>([]);
   // La tâche n'est supprimée qu'après une confirmation explicite dans la fenêtre modale.
   protected readonly taskPendingDeletion = signal<Task | null>(null);
   private readonly projectApi = inject(ProjectApiService);
   private readonly dailyPriorityApi = inject(DailyPriorityApiService);
+  private readonly apiErrors = inject(ApiErrorService);
+  private readonly onboarding = inject(OnboardingService);
   protected readonly dailyPriorities = signal<DailyPriority[]>([]);
   protected readonly priorityError = signal<string | null>(null);
+  protected readonly completionPercentage = computed(() => {
+    const total = this.store.taskCount();
+    return total === 0 ? 0 : Math.round((this.store.completedTaskCount() / total) * 100);
+  });
 
   constructor() {
     this.store.loadTasks();
@@ -39,16 +49,22 @@ export class TaskListPageComponent {
   protected loadDailyPriorities(): void {
     this.dailyPriorityApi.getToday().subscribe({
       next: (priorities) => { this.dailyPriorities.set(priorities); this.priorityError.set(null); },
-      error: () => this.priorityError.set('Impossible de charger vos priorités du jour.'),
+      error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Impossible de charger vos priorités du jour.')),
     });
   }
 
   protected addDailyPriority(taskId: number): void {
-    this.dailyPriorityApi.add(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: () => this.priorityError.set('Vous pouvez choisir au maximum trois priorités.') });
+    this.dailyPriorityApi.add(taskId).subscribe({
+      next: () => {
+        this.loadDailyPriorities();
+        this.onboarding.completeStep('daily-priorities');
+      },
+      error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Vous pouvez choisir au maximum trois priorités.')),
+    });
   }
 
   protected removeDailyPriority(taskId: number): void {
-    this.dailyPriorityApi.remove(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: () => this.priorityError.set('Impossible de retirer cette priorité.') });
+    this.dailyPriorityApi.remove(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Impossible de retirer cette priorité.')) });
   }
 
   protected isDailyPriority(taskId: number): boolean { return this.dailyPriorities().some((priority) => priority.taskId === taskId); }
@@ -77,6 +93,26 @@ export class TaskListPageComponent {
 
     return [...visibleTasks].sort((left, right) => this.compareTasks(left, right));
   });
+
+  protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.filteredTasks().length / this.pageSize)));
+  protected readonly displayedPage = computed(() => Math.min(this.currentPage(), this.pageCount()));
+  protected readonly paginatedTasks = computed(() => {
+    const start = (this.displayedPage() - 1) * this.pageSize;
+    return this.filteredTasks().slice(start, start + this.pageSize);
+  });
+  protected readonly firstDisplayedTask = computed(() => this.filteredTasks().length === 0 ? 0 : (this.displayedPage() - 1) * this.pageSize + 1);
+  protected readonly lastDisplayedTask = computed(() => Math.min(this.displayedPage() * this.pageSize, this.filteredTasks().length));
+
+  protected updateFilter(filter: TaskFilter): void { this.currentFilter.set(filter); this.currentPage.set(1); }
+  protected updateSearch(value: string): void { this.searchTerm.set(value); this.currentPage.set(1); }
+  protected updateSort(value: 'priority' | 'dueDate'): void { this.sortBy.set(value); this.currentPage.set(1); }
+  protected updateProject(value: number | null): void { this.projectId.set(value); this.currentPage.set(1); }
+  protected previousPage(): void { this.currentPage.update((page) => Math.max(1, page - 1)); }
+  protected nextPage(): void { this.currentPage.update((page) => Math.min(this.pageCount(), page + 1)); }
+
+  protected toggleTask(id: number): void {
+    this.store.toggleTask(id, () => this.onboarding.completeStep('task-progress'));
+  }
 
   protected editTask(id: number): void {
     // La navigation construit l'URL dynamique /tasks/:id/edit.

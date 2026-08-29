@@ -8,9 +8,20 @@
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
-        "build": { "builder": "@angular/build:application", "options": { "outputPath": "dist/taskflow", "index": "src/index.html", "browser": "src/main.ts", "polyfills": ["zone.js"], "tsConfig": "tsconfig.app.json", "assets": [], "styles": ["src/styles.css"] } },
-        "serve": { "builder": "@angular/build:dev-server", "configurations": { "development": { "buildTarget": "taskflow:build" } }, "defaultConfiguration": "development" },
-        "test": { "builder": "@angular/build:unit-test", "options": { "buildTarget": "taskflow:build", "tsConfig": "tsconfig.spec.json", "runner": "vitest" } }
+        "build": {
+          "builder": "@angular/build:application",
+          "options": { "outputPath": "dist/taskflow", "index": "src/index.html", "browser": "src/main.ts", "polyfills": ["zone.js"], "tsConfig": "tsconfig.app.json", "assets": [], "styles": ["src/styles.css"] },
+          "configurations": {
+            "production": {
+              "fileReplacements": [{ "replace": "src/environments/environment.ts", "with": "src/environments/environment.production.ts" }],
+              "outputHashing": "all"
+            },
+            "development": { "optimization": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": { "builder": "@angular/build:dev-server", "configurations": { "development": { "buildTarget": "taskflow:build:development" }, "production": { "buildTarget": "taskflow:build:production" } }, "defaultConfiguration": "development" },
+        "test": { "builder": "@angular/build:unit-test", "options": { "buildTarget": "taskflow:build:development", "tsConfig": "tsconfig.spec.json", "runner": "vitest" } }
       }
     }
   }
