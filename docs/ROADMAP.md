@@ -17,6 +17,8 @@
 - [x] confirmation de suppression ;
 - [x] notifications de succès et d'erreur ;
 - [x] accessibilité et responsive renforcés ;
+- [x] projets reconnaissables par icône et couleur ;
+- [x] parcours guidé de première utilisation ;
 - [ ] tests end-to-end du parcours critique.
 
 ## Version 0.3 — Comptes et sécurité
@@ -30,10 +32,17 @@
 
 ## Version 0.4 — Focus quotidien
 
-- [ ] V1 `Mes 3 priorités du jour` ([spécification](FOCUS-THREE-V1.md)) ;
-- [ ] limite de trois contrôlée par le backend ;
-- [ ] tests des priorités et de l'isolation par utilisateur ;
+- [x] V1 `Mes 3 priorités du jour` ([spécification](FOCUS-THREE-V1.md)) ;
+- [x] limite de trois contrôlée par le backend ;
+- [x] tests des priorités et de l'isolation par utilisateur ;
 - [ ] validation du besoin auprès de 5 à 8 utilisateurs.
+
+## Idées à évaluer après la V1
+
+- [ ] proposer au maximum deux priorités inachevées de la veille, avec reprise manuelle ;
+- [ ] durée estimée d'une tâche et charge totale des trois priorités ;
+- [ ] date de planification distincte de la date d'échéance ;
+- [ ] comparaison entre temps estimé et temps réellement passé.
 
 ## Version 0.5 — Déploiement
 
