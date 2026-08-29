@@ -63,8 +63,19 @@ class PostgresMigrationIntegrationTest {
                 Long.class
         );
 
-        assertThat(successfulMigrations).isEqualTo(4);
+        Long dailyPrioritiesTable = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM information_schema.tables
+                WHERE table_schema = current_schema()
+                  AND table_name = 'daily_priorities'
+                """,
+                Long.class
+        );
+
+        assertThat(successfulMigrations).isEqualTo(5);
         assertThat(taskStatus).isEqualTo("IN_PROGRESS");
         assertThat(removedCompletedColumns).isZero();
+        assertThat(dailyPrioritiesTable).isEqualTo(1);
     }
 }
