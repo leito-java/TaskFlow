@@ -25,7 +25,7 @@
 
     @if (auth.isAuthenticated()) {
       <div class="topbar-actions">
-        <a class="account-link" routerLink="/security">
+        <a class="account-link" routerLink="/security" aria-label="Mon compte">
           <span class="account-avatar" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
@@ -34,7 +34,7 @@
           </span>
           <span>Mon compte</span>
         </a>
-        <button class="logout-button" type="button" (click)="logout()">
+        <button class="logout-button" type="button" (click)="logout()" aria-label="Déconnexion">
           <span class="logout-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M10 5H6.5A2.5 2.5 0 0 0 4 7.5v9A2.5 2.5 0 0 0 6.5 19H10" />

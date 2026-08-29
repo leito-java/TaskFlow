@@ -41,6 +41,11 @@ describe('AppComponent', () => {
       .toContain('Aller au contenu principal');
   });
 
+  it('conserve des noms accessibles lorsque le header mobile masque ses textes', () => {
+    expect(fixture.nativeElement.querySelector('.account-link')?.getAttribute('aria-label')).toBe('Mon compte');
+    expect(fixture.nativeElement.querySelector('.logout-button')?.getAttribute('aria-label')).toBe('Déconnexion');
+  });
+
   it('efface les tâches en mémoire avant la déconnexion', () => {
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('.logout-button');
     button.click();
