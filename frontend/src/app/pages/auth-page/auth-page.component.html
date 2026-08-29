@@ -4,6 +4,7 @@
     <h1>{{ isRegistration() ? 'Créez votre espace' : 'Bon retour parmi nous' }}</h1>
     <p>{{ isRegistration() ? 'Vos tâches seront privées et synchronisées.' : 'Connectez-vous pour retrouver vos priorités.' }}</p>
 
+    @if (information()) { <p class="form-information" role="status">{{ information() }}</p> }
     @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
 
     <label for="email">Adresse e-mail</label>

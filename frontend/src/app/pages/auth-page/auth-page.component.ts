@@ -15,6 +15,11 @@ export class AuthPageComponent {
   private readonly auth = inject(AuthService);
   private readonly formBuilder = inject(FormBuilder);
   protected readonly isRegistration = computed(() => this.route.snapshot.routeConfig?.path === 'register');
+  protected readonly information = computed(() =>
+    this.route.snapshot.queryParamMap.get('reason') === 'session-expired'
+      ? 'Votre session a expiré. Connectez-vous de nouveau.'
+      : null,
+  );
   protected readonly submitting = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly form = this.formBuilder.nonNullable.group({
