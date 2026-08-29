@@ -19,6 +19,20 @@ import java.util.Map;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    ProblemDetail invalidBusinessRequest(IllegalArgumentException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        problem.setTitle("Opération impossible");
+        return problem;
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    ProblemDetail invalidBusinessState(IllegalStateException exception) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Limite de priorités atteinte");
+        return problem;
+    }
+
     @ExceptionHandler(EmailAlreadyUsedException.class)
     ProblemDetail emailAlreadyUsed(EmailAlreadyUsedException exception) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
