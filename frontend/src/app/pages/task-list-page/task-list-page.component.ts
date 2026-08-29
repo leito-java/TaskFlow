@@ -7,6 +7,7 @@ import { Task, TaskFilter } from '../../task.model';
 import { ProjectApiService } from '../../project-api.service';
 import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
+import { DailyPriority, DailyPriorityApiService } from '../../daily-priority-api.service';
 
 @Component({
   selector: 'app-task-list-page',
@@ -25,8 +26,44 @@ export class TaskListPageComponent {
   // La tâche n'est supprimée qu'après une confirmation explicite dans la fenêtre modale.
   protected readonly taskPendingDeletion = signal<Task | null>(null);
   private readonly projectApi = inject(ProjectApiService);
+  private readonly dailyPriorityApi = inject(DailyPriorityApiService);
+  protected readonly dailyPriorities = signal<DailyPriority[]>([]);
+  protected readonly priorityError = signal<string | null>(null);
 
-  constructor() { this.store.loadTasks(); this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) }); }
+  constructor() {
+    this.store.loadTasks();
+    this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) });
+    this.loadDailyPriorities();
+  }
+
+  protected loadDailyPriorities(): void {
+    this.dailyPriorityApi.getToday().subscribe({
+      next: (priorities) => { this.dailyPriorities.set(priorities); this.priorityError.set(null); },
+      error: () => this.priorityError.set('Impossible de charger vos priorités du jour.'),
+    });
+  }
+
+  protected addDailyPriority(taskId: number): void {
+    this.dailyPriorityApi.add(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: () => this.priorityError.set('Vous pouvez choisir au maximum trois priorités.') });
+  }
+
+  protected removeDailyPriority(taskId: number): void {
+    this.dailyPriorityApi.remove(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: () => this.priorityError.set('Impossible de retirer cette priorité.') });
+  }
+
+  protected isDailyPriority(taskId: number): boolean { return this.dailyPriorities().some((priority) => priority.taskId === taskId); }
+
+  protected taskForPriority(taskId: number): Task | null {
+    return this.store.taskById(taskId);
+  }
+
+  protected priorityLabel(priority: Task['priority']): string {
+    return { low: 'Basse', medium: 'Moyenne', high: 'Haute' }[priority];
+  }
+
+  protected openTask(taskId: number): void {
+    void this.router.navigate(['/tasks', taskId, 'edit']);
+  }
 
   // La liste se recalcule quand le store, le filtre, la recherche ou le tri change.
   protected readonly filteredTasks = computed(() => {

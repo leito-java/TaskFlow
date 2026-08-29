@@ -28,7 +28,14 @@
 - [ ] rôles utilisateur et administrateur ;
 - [ ] tests d'autorisation.
 
-## Version 0.4 — Déploiement
+## Version 0.4 — Focus quotidien
+
+- [ ] V1 `Mes 3 priorités du jour` ([spécification](FOCUS-THREE-V1.md)) ;
+- [ ] limite de trois contrôlée par le backend ;
+- [ ] tests des priorités et de l'isolation par utilisateur ;
+- [ ] validation du besoin auprès de 5 à 8 utilisateurs.
+
+## Version 0.5 — Déploiement
 
 - [ ] images Docker frontend et backend ;
 - [ ] environnement de production ;
