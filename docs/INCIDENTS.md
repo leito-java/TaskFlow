@@ -24,6 +24,24 @@ Les tests Angular et les tests Java locaux réussissaient, mais le job GitHub **
 
 Un test de migration doit contrôler le contrat introduit par une migration précise, pas supposer que le nombre total de migrations restera constant.
 
+## 2026-08-29 — Un avertissement Node interrompt le script de Pull Request
+
+### Symptôme
+
+Les tests Angular réussissaient, mais `submit-pr.ps1` s'arrêtait sur un bloc `node.exe : stderr` signalé comme `NativeCommandError`.
+
+### Cause
+
+Windows PowerShell 5.1 convertit parfois la sortie d'erreur d'un programme natif en erreur PowerShell. Avec `$ErrorActionPreference = 'Stop'`, un simple avertissement interrompait le script avant la vérification du véritable code de sortie du programme.
+
+### Correction
+
+`Invoke-CheckedCommand` autorise temporairement les messages natifs sur `stderr`, restaure ensuite la politique stricte et considère la commande comme échouée uniquement lorsque `$LASTEXITCODE` est différent de zéro.
+
+### Règle préventive
+
+Pour les outils natifs (`npm`, Maven, Git et GitHub CLI), décider du succès avec leur code de sortie. Conserver leur sortie pour le diagnostic sans assimiler automatiquement chaque message `stderr` à un échec.
+
 ## Modèle pour un prochain incident
 
 ```text

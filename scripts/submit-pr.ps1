@@ -13,8 +13,16 @@ Set-StrictMode -Version Latest
 function Invoke-CheckedCommand {
   param([string]$Command, [string[]]$Arguments)
   $capturedOutput = @()
-  & $Command @Arguments 2>&1 | Tee-Object -Variable capturedOutput
-  $exitCode = $LASTEXITCODE
+  $previousErrorActionPreference = $ErrorActionPreference
+  try {
+    # Windows PowerShell 5.1 transforme parfois stderr d'un programme natif
+    # en NativeCommandError. Seul son code de sortie détermine ici le succès.
+    $ErrorActionPreference = 'Continue'
+    & $Command @Arguments 2>&1 | Tee-Object -Variable capturedOutput
+    $exitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
   if ($exitCode -ne 0) {
     $logDirectory = Join-Path $repositoryRoot '.taskflow\logs'
     New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
