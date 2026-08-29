@@ -5,11 +5,37 @@
     <span>Regroupez vos tâches par contexte : formation, travail ou projet personnel.</span>
   </header>
 
-  <form (ngSubmit)="create()">
+  <form (ngSubmit)="create()" class="project-creator" data-tour="project-creator">
+    <div class="form-heading"><span aria-hidden="true">＋</span><div><strong>Nouveau projet</strong><p>Donnez-lui une identité facile à reconnaître.</p></div></div>
     <label for="project-name">Nom du projet</label>
-    <div class="project-form-actions">
+    <div class="name-row">
       <input id="project-name" name="name" [(ngModel)]="name" placeholder="Ex. Formation" maxlength="80" required>
-      <button type="submit" [disabled]="!name.trim()">Créer un projet</button>
+    </div>
+    <fieldset>
+      <legend>Choisissez une icône</legend>
+      <div class="icon-picker">
+        @for (option of iconOptions; track option.value) {
+          <label [class.selected]="icon === option.value">
+            <input type="radio" name="icon" [value]="option.value" [(ngModel)]="icon">
+            <span aria-hidden="true">{{ option.symbol }}</span><small>{{ option.label }}</small>
+          </label>
+        }
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Choisissez une couleur</legend>
+      <div class="color-picker">
+        @for (choice of colors; track choice) {
+          <label [style.--project-color]="choice" [class.selected]="color === choice" [attr.aria-label]="'Couleur ' + choice">
+            <input type="radio" name="color" [value]="choice" [(ngModel)]="color"><span aria-hidden="true"></span>
+          </label>
+        }
+      </div>
+    </fieldset>
+    <div class="project-preview" [style.--project-color]="color">
+      <span class="project-icon" aria-hidden="true">{{ iconSymbol(icon) }}</span>
+      <div><small>Aperçu</small><strong>{{ name.trim() || 'Nom de votre projet' }}</strong></div>
+      <button type="submit" [disabled]="!name.trim()">Créer le projet</button>
     </div>
   </form>
 
@@ -17,8 +43,14 @@
 
   <section class="projects-list" aria-labelledby="projects-list-title">
     <h2 id="projects-list-title">Vos projets</h2>
-    <ul>
-      @for (project of projects(); track project.id) { <li><span aria-hidden="true">▣</span>{{ project.name }}</li> }
+    <ul class="project-grid">
+      @for (project of projects(); track project.id) {
+        <li class="project-card" [style.--project-color]="project.color || '#6D5CE7'">
+          <span class="project-icon" aria-hidden="true">{{ iconSymbol(project.icon) }}</span>
+          <div><strong>{{ project.name }}</strong><small>Projet personnel</small></div>
+          <span class="project-arrow" aria-hidden="true">→</span>
+        </li>
+      }
       @empty { <li class="empty-state">Aucun projet. Créez votre premier projet.</li> }
     </ul>
   </section>

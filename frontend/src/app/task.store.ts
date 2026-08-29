@@ -1,10 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
 import { TaskApiService } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { AuthService } from './auth.service';
 import { NotificationService } from './notification.service';
+import { ApiErrorService } from './api-error.service';
 
 /** État d'interface partagé ; la source persistante est maintenant l'API. */
 @Injectable({ providedIn: 'root' })
@@ -12,6 +12,7 @@ export class TaskStore {
   private readonly api = inject(TaskApiService);
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
+  private readonly apiErrors = inject(ApiErrorService);
   // L'état reste privé : les composants peuvent le lire, mais pas le modifier directement.
   private readonly taskState = signal<Task[]>([]);
   private readonly loadingState = signal(false);
@@ -112,14 +113,7 @@ export class TaskStore {
   }
 
   private reportError(error: unknown): void {
-    let message: string;
-    if (error instanceof HttpErrorResponse && error.status === 0) {
-      message = "Impossible de joindre l'API. Vérifiez que Spring Boot est lancé sur le port 8080.";
-    } else if (error instanceof HttpErrorResponse && typeof error.error?.detail === 'string') {
-      message = error.error.detail;
-    } else {
-      message = "Une erreur inattendue s'est produite. Réessayez.";
-    }
+    const message = this.apiErrors.message(error);
     this.errorState.set(message);
     this.notifications.error(message);
   }

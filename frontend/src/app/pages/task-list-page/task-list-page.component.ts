@@ -8,6 +8,7 @@ import { ProjectApiService } from '../../project-api.service';
 import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
 import { DailyPriority, DailyPriorityApiService } from '../../daily-priority-api.service';
+import { ApiErrorService } from '../../api-error.service';
 
 @Component({
   selector: 'app-task-list-page',
@@ -27,6 +28,7 @@ export class TaskListPageComponent {
   protected readonly taskPendingDeletion = signal<Task | null>(null);
   private readonly projectApi = inject(ProjectApiService);
   private readonly dailyPriorityApi = inject(DailyPriorityApiService);
+  private readonly apiErrors = inject(ApiErrorService);
   protected readonly dailyPriorities = signal<DailyPriority[]>([]);
   protected readonly priorityError = signal<string | null>(null);
 
@@ -39,16 +41,16 @@ export class TaskListPageComponent {
   protected loadDailyPriorities(): void {
     this.dailyPriorityApi.getToday().subscribe({
       next: (priorities) => { this.dailyPriorities.set(priorities); this.priorityError.set(null); },
-      error: () => this.priorityError.set('Impossible de charger vos priorités du jour.'),
+      error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Impossible de charger vos priorités du jour.')),
     });
   }
 
   protected addDailyPriority(taskId: number): void {
-    this.dailyPriorityApi.add(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: () => this.priorityError.set('Vous pouvez choisir au maximum trois priorités.') });
+    this.dailyPriorityApi.add(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Vous pouvez choisir au maximum trois priorités.')) });
   }
 
   protected removeDailyPriority(taskId: number): void {
-    this.dailyPriorityApi.remove(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: () => this.priorityError.set('Impossible de retirer cette priorité.') });
+    this.dailyPriorityApi.remove(taskId).subscribe({ next: () => this.loadDailyPriorities(), error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Impossible de retirer cette priorité.')) });
   }
 
   protected isDailyPriority(taskId: number): boolean { return this.dailyPriorities().some((priority) => priority.taskId === taskId); }

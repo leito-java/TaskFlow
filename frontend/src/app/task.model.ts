@@ -31,4 +31,5 @@ export interface Task extends TaskDraft {
   projectName?: string | null;
 }
 
-export interface Project { id: number; name: string; }
+export type ProjectIcon = 'work' | 'study' | 'personal' | 'health' | 'finance' | 'code' | 'creative' | 'folder';
+export interface Project { id: number; name: string; icon: ProjectIcon; color: string; }
