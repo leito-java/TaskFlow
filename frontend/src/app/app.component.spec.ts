@@ -1,9 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
 import { provideRouter, Router } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AuthService } from './auth.service';
 import { TaskStore } from './task.store';
 import { NotificationService } from './notification.service';
+
+@Component({
+  selector: 'app-test-empty-page',
+  template: '',
+})
+class EmptyPageComponent {}
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -11,11 +18,11 @@ describe('AppComponent', () => {
   const taskStore = { taskCount: () => 0, clearUserData: vi.fn() };
 
   beforeEach(() => {
-    // Le composant racine utilise le routeur : le test lui fournit une configuration vide.
+    // La route générique absorbe la navigation initiale sans charger une vraie page.
     TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: '**', component: EmptyPageComponent }]),
         { provide: AuthService, useValue: auth },
         { provide: TaskStore, useValue: taskStore },
         { provide: NotificationService, useValue: { current: () => null, dismiss: () => undefined } },
