@@ -15,7 +15,7 @@ export class OnboardingService {
     { eyebrow: 'Étape 1 sur 4', title: 'Créez un projet', description: 'Utilisez la zone éclairée : saisissez un nom, choisissez une icône et une couleur, puis cliquez sur Créer le projet.', route: '/projects', action: "J’ai créé mon projet", target: 'project-creator' },
     { eyebrow: 'Étape 2 sur 4', title: 'Ajoutez une tâche', description: 'Remplissez le vrai formulaire, sélectionnez le projet que vous venez de créer, puis enregistrez la tâche.', route: '/tasks/new', action: "J’ai créé ma tâche", target: 'task-creator' },
     { eyebrow: 'Étape 3 sur 4', title: 'Choisissez votre focus', description: 'Dans la zone éclairée, ajoutez votre nouvelle tâche aux trois priorités du jour.', route: '/tasks', action: "J’ai choisi mon focus", target: 'daily-priorities' },
-    { eyebrow: 'Étape 4 sur 4', title: 'Marquez votre tâche comme terminée', description: 'Repérez la tâche créée dans la liste éclairée, puis cochez la case à gauche de son titre. Le résumé « Terminées » en haut de la page augmentera. Le focus restera à 3/3 : il indique le nombre de priorités choisies, même lorsqu’une priorité est terminée.', route: '/tasks', action: 'Ma tâche est terminée', target: 'task-list' },
+    { eyebrow: 'Étape 4 sur 4', title: 'Marquez votre tâche comme terminée', description: 'Dans la liste située plus bas, cochez la case à gauche du titre de votre tâche. La progression éclairée augmentera et une confirmation affichera le nouveau total. Le focus restera à 3/3, car il compte les priorités choisies.', route: '/tasks', action: 'Ma tâche est terminée', target: 'task-progress' },
   ];
 
   constructor() {

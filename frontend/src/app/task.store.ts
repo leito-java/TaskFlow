@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
 import { TaskApiService } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
@@ -29,7 +29,22 @@ export class TaskStore {
   readonly remainingTaskCount = computed(() => this.todoTaskCount() + this.inProgressTaskCount());
 
   constructor() {
+    // Le premier chargement reste immédiat : les pages et les tests disposent
+    // des données dès la création du store.
     if (this.auth.isAuthenticated()) this.loadTasks();
+
+    // Ensuite, le signal d'authentification sert uniquement à purger la mémoire
+    // lorsque la session expire ou que l'utilisateur se déconnecte.
+    effect(() => {
+      if (!this.auth.isAuthenticated()) this.clearUserData();
+    });
+  }
+
+  /** Efface immédiatement les données de l'utilisateur précédent de la mémoire du navigateur. */
+  clearUserData(): void {
+    this.taskState.set([]);
+    this.loadingState.set(false);
+    this.errorState.set(null);
   }
 
   /** Charge la liste depuis Spring Boot et met à jour les états d'interface. */
@@ -82,7 +97,14 @@ export class TaskStore {
       dueDate: current.dueDate,
       projectId: current.projectId,
     }).subscribe({
-      next: (task) => this.replaceTask(task),
+      next: (task) => {
+        this.replaceTask(task);
+        if (task.status === 'done') {
+          this.notifications.success(`« ${task.title} » terminée — progression : ${this.completedTaskCount()} sur ${this.taskCount()}.`);
+        } else {
+          this.notifications.success(`« ${task.title} » replacée dans les tâches à faire.`);
+        }
+      },
       error: (error: unknown) => this.reportError(error),
     });
   }

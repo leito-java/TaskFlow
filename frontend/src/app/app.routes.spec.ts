@@ -11,6 +11,7 @@ import { TaskApiService, TaskUpdate } from './task-api.service';
 import { Task, TaskDraft } from './task.model';
 import { AuthService } from './auth.service';
 import { ProjectApiService } from './project-api.service';
+import { TaskStore } from './task.store';
 
 class FakeTaskApiService {
   private readonly tasks: Task[] = [
@@ -75,6 +76,33 @@ describe('routes', () => {
 
     expect(harness.routeNativeElement?.textContent).toContain('Liste des tâches');
     expect(harness.routeNativeElement?.textContent).toContain('Organiser la prochaine livraison');
+  });
+
+  it('pagine une longue liste par groupes de vingt tâches', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/tasks', TaskListPageComponent);
+    const tasks = Array.from({ length: 22 }, (_, index): Task => ({
+      id: index + 1,
+      title: `Tâche ${index + 1}`,
+      description: null,
+      priority: 'medium',
+      status: 'todo',
+      dueDate: null,
+      completed: false,
+    }));
+    const store = TestBed.inject(TaskStore) as unknown as { taskState: { set(tasks: Task[]): void } };
+    store.taskState.set(tasks);
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.querySelectorAll('app-task-item').length).toBe(20);
+    expect(harness.routeNativeElement?.textContent).toContain('1–20 sur 22 tâches');
+
+    const next = harness.routeNativeElement?.querySelector<HTMLButtonElement>('button[aria-label="Afficher la page suivante"]');
+    next?.click();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.querySelectorAll('app-task-item').length).toBe(2);
+    expect(harness.routeNativeElement?.textContent).toContain('21–22 sur 22 tâches');
   });
 
   it('affiche un état vide lorsqu’une recherche ne correspond à aucune tâche', async () => {

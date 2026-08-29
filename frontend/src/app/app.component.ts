@@ -16,11 +16,16 @@ import { OnboardingService } from './onboarding.service';
 })
 export class AppComponent {
   // Le compteur reste visible dans la navigation, quelle que soit la page active.
-  protected readonly taskCount = inject(TaskStore).taskCount;
+  private readonly taskStore = inject(TaskStore);
+  protected readonly taskCount = this.taskStore.taskCount;
   protected readonly auth = inject(AuthService);
   protected readonly notifications = inject(NotificationService);
   protected readonly onboarding = inject(OnboardingService);
   private readonly router = inject(Router);
 
-  protected logout(): void { this.auth.logout(); void this.router.navigateByUrl('/login'); }
+  protected logout(): void {
+    this.taskStore.clearUserData();
+    this.auth.logout();
+    void this.router.navigateByUrl('/login');
+  }
 }

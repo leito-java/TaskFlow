@@ -19,6 +19,8 @@
 - [x] accessibilité et responsive renforcés ;
 - [x] projets reconnaissables par icône et couleur ;
 - [x] parcours guidé de première utilisation ;
+- [x] pagination Angular de la liste par groupes de 20 tâches ;
+- [ ] pagination, recherche, filtres et tri côté Spring Boot pour les volumes importants ;
 - [ ] tests end-to-end du parcours critique.
 
 ## Version 0.3 — Comptes et sécurité

@@ -149,9 +149,11 @@ nav a.active { background: #fff; box-shadow: 0 4px 14px rgb(15 23 42 / 8%); colo
   border-radius: 9px;
   background: linear-gradient(135deg, #ede9fe, #dbeafe);
   color: #5b4cc4;
-  font-size: .7rem;
-  font-weight: 900;
 }
+
+.account-avatar svg,
+.logout-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.logout-icon { display: grid; flex: none; place-items: center; width: 24px; height: 24px; }
 
 .logout-button {
   padding: 0 9px;

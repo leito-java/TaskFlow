@@ -26,11 +26,21 @@
     @if (auth.isAuthenticated()) {
       <div class="topbar-actions">
         <a class="account-link" routerLink="/security">
-          <span class="account-avatar" aria-hidden="true">C</span>
+          <span class="account-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+              <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+            </svg>
+          </span>
           <span>Mon compte</span>
         </a>
         <button class="logout-button" type="button" (click)="logout()">
-          <span aria-hidden="true">↪</span>
+          <span class="logout-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M10 5H6.5A2.5 2.5 0 0 0 4 7.5v9A2.5 2.5 0 0 0 6.5 19H10" />
+              <path d="M14 8l4 4-4 4M18 12H9" />
+            </svg>
+          </span>
           <span>Déconnexion</span>
         </button>
         <a class="new-task-link" routerLink="/tasks/new">Nouvelle tâche <span aria-hidden="true">＋</span></a>
