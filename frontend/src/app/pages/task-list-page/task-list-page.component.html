@@ -15,6 +15,59 @@
     <span><strong>{{ store.completedTaskCount() }}</strong> terminées</span>
   </section>
 
+  <section class="daily-priorities" aria-labelledby="daily-priorities-title">
+    <div class="priority-heading">
+      <div>
+        <p>Focus quotidien</p>
+        <h2 id="daily-priorities-title">Mes priorités du jour</h2>
+        <span>Concentrez-vous sur les trois tâches qui comptent vraiment aujourd’hui.</span>
+      </div>
+      <div class="priority-progress" [attr.aria-label]="dailyPriorities().length + ' priorités sur 3'">
+        <strong>{{ dailyPriorities().length }}</strong>
+        <span>sur 3</span>
+      </div>
+    </div>
+    @if (priorityError()) { <p class="api-message error-message" role="alert">{{ priorityError() }}</p> }
+    @if (dailyPriorities().length === 0) {
+      <div class="priority-empty">
+        <span aria-hidden="true">◎</span>
+        <div><strong>Votre focus est encore vide</strong><p>Ajoutez jusqu’à trois tâches avec les boutons ci-dessous.</p></div>
+      </div>
+    }
+    <ol class="priority-list">
+      @for (priority of dailyPriorities(); track priority.id) {
+        <li>
+          <span class="priority-position" aria-hidden="true">{{ $index + 1 }}</span>
+          <button class="priority-content" type="button" (click)="openTask(priority.taskId)" [attr.aria-label]="'Ouvrir la tâche ' + priority.title">
+            <strong>{{ priority.title }}</strong>
+            @if (taskForPriority(priority.taskId); as task) {
+              <span>
+                {{ task.projectName || 'Sans projet' }}
+                <i aria-hidden="true">•</i>
+                <em class="priority-badge" [attr.data-priority]="task.priority">Priorité {{ priorityLabel(task.priority).toLocaleLowerCase() }}</em>
+              </span>
+            }
+          </button>
+          <button class="priority-remove" type="button" (click)="removeDailyPriority(priority.taskId)" [attr.aria-label]="'Retirer ' + priority.title + ' des priorités'" title="Retirer des priorités">×</button>
+        </li>
+      }
+    </ol>
+    @if (dailyPriorities().length < 3) {
+      <div class="priority-picker" aria-label="Ajouter une priorité">
+        <p>Ajouter au focus</p>
+        <div>
+          @for (task of store.tasks(); track task.id) {
+            @if (!isDailyPriority(task.id) && task.status !== 'done') {
+              <button type="button" (click)="addDailyPriority(task.id)"><span aria-hidden="true">＋</span> {{ task.title }}</button>
+            }
+          }
+        </div>
+      </div>
+    } @else {
+      <p class="priority-complete"><span aria-hidden="true">✓</span> Votre sélection du jour est complète.</p>
+    }
+  </section>
+
   <section class="tasks-panel" aria-label="Liste des tâches">
     <div class="panel-heading">
       <div>
