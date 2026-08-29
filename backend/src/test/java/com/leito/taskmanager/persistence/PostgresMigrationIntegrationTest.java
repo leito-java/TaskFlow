@@ -32,6 +32,10 @@ class PostgresMigrationIntegrationTest {
                 "SELECT COUNT(*) FROM flyway_schema_history WHERE version = '5' AND success = TRUE",
                 Long.class
         );
+        Long projectAppearanceMigration = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM flyway_schema_history WHERE version = '6' AND success = TRUE",
+                Long.class
+        );
         Long legacyOwnerId = jdbcTemplate.queryForObject(
                 "SELECT id FROM app_users WHERE email = 'legacy@taskflow.local'",
                 Long.class
@@ -79,8 +83,9 @@ class PostgresMigrationIntegrationTest {
 
         // Une future V6 ne doit pas casser ce test : on contrôle la présence de V5,
         // et non un nombre total de migrations figé dans le temps.
-        assertThat(successfulMigrations).isGreaterThanOrEqualTo(5);
+        assertThat(successfulMigrations).isGreaterThanOrEqualTo(6);
         assertThat(dailyPriorityMigration).isEqualTo(1);
+        assertThat(projectAppearanceMigration).isEqualTo(1);
         assertThat(taskStatus).isEqualTo("IN_PROGRESS");
         assertThat(removedCompletedColumns).isZero();
         assertThat(dailyPrioritiesTable).isEqualTo(1);
