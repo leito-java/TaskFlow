@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AuthService } from './auth.service';
 import { TaskStore } from './task.store';
@@ -47,6 +47,7 @@ describe('AppComponent', () => {
   });
 
   it('efface les tâches en mémoire avant la déconnexion', () => {
+    vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('.logout-button');
     button.click();
 
