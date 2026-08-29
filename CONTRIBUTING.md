@@ -36,6 +36,7 @@ cd frontend
 npm ci
 npm test
 npm run build
+npm run test:e2e
 
 cd ..\backend
 mvn verify
@@ -45,6 +46,7 @@ mvn verify
 
 - [ ] le besoin et les critères d'acceptation sont clairs ;
 - [ ] le frontend compile et ses tests réussissent ;
+- [ ] le parcours end-to-end critique réussit ;
 - [ ] le backend compile et ses tests réussissent ;
 - [ ] le contrat HTTP reste cohérent ;
 - [ ] les erreurs et validations utiles sont couvertes ;

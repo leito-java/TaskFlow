@@ -10,6 +10,7 @@ Décrivez le problème et le résultat attendu.
 
 - [ ] `npm test` dans `frontend`
 - [ ] `npm run build` dans `frontend`
+- [ ] `npm run test:e2e` dans `frontend`
 - [ ] `mvn verify` dans `backend`
 - [ ] scénario manuel concerné
 - [ ] documentation mise à jour

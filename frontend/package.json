@@ -6,7 +6,10 @@
     "build": "ng build",
     "test": "ng test --no-watch --no-progress",
     "test:watch": "ng test",
-    "test:coverage": "ng test --no-watch --coverage"
+    "test:coverage": "ng test --no-watch --coverage",
+    "test:e2e:install": "node scripts/install-playwright.mjs",
+    "test:e2e": "node scripts/run-playwright.mjs",
+    "test:e2e:ui": "node scripts/run-playwright.mjs --ui"
   },
   "dependencies": {
     "@angular/common": "^22.0.0",
@@ -22,8 +25,10 @@
     "@angular/build": "^22.0.0",
     "@angular/cli": "^22.0.0",
     "@angular/compiler-cli": "^22.0.0",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.0",
     "jsdom": "^27.0.0",
-    "vitest": "^4.0.8",
-    "typescript": "~6.0.0"
+    "typescript": "~6.0.0",
+    "vitest": "^4.0.8"
   }
 }

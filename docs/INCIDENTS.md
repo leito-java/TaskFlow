@@ -42,6 +42,26 @@ Windows PowerShell 5.1 convertit parfois la sortie d'erreur d'un programme natif
 
 Pour les outils natifs (`npm`, Maven, Git et GitHub CLI), décider du succès avec leur code de sortie. Conserver leur sortie pour le diagnostic sans assimiler automatiquement chaque message `stderr` à un échec.
 
+## 2026-08-30 — Playwright attend silencieusement les serveurs locaux
+
+### Symptôme
+
+Les tests Angular et le build réussissaient rapidement, puis `npm run test:e2e` restait sans message avant même d'afficher le lancement du scénario.
+
+### Cause
+
+Angular écoutait sur `localhost` via IPv6 (`::1`) alors que Playwright vérifiait `127.0.0.1` via IPv4. De plus, le parcours E2E local dépendait de plusieurs services et ralentissait systématiquement la création de la Pull Request.
+
+### Correction
+
+- utiliser `localhost` de manière cohérente dans la configuration Playwright ;
+- rendre le parcours local optionnel avec `-RunE2E` ;
+- conserver le parcours E2E obligatoire dans le contrôle CI Angular avant fusion.
+
+### Règle préventive
+
+Les vérifications rapides doivent rester séparées des tests multi-services. Les tests E2E sont lancés localement à la demande et systématiquement dans une CI reproductible avec sa propre base de données.
+
 ## Modèle pour un prochain incident
 
 ```text
