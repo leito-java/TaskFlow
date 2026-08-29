@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { provideRouter, Router } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AuthService } from './auth.service';
@@ -14,7 +14,11 @@ class EmptyPageComponent {}
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
-  const auth = { isAuthenticated: () => true, logout: vi.fn() };
+  const auth = {
+    email: signal<string | null>(null),
+    isAuthenticated: () => true,
+    logout: vi.fn(),
+  };
   const taskStore = { taskCount: () => 0, clearUserData: vi.fn() };
 
   beforeEach(() => {
