@@ -9,12 +9,19 @@ export interface DailyPriority {
   position: number;
 }
 
+export interface DailyPrioritySuggestion {
+  taskId: number;
+  title: string;
+  previousDate: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DailyPriorityApiService {
   private readonly http = inject(HttpClient);
   private readonly endpoint = '/api/daily-priorities';
 
   getToday(): Observable<DailyPriority[]> { return this.http.get<DailyPriority[]>(this.endpoint); }
+  getSuggestions(): Observable<DailyPrioritySuggestion[]> { return this.http.get<DailyPrioritySuggestion[]>(`${this.endpoint}/suggestions`); }
   add(taskId: number): Observable<DailyPriority> { return this.http.post<DailyPriority>(this.endpoint, { taskId }); }
   remove(taskId: number): Observable<void> { return this.http.delete<void>(`${this.endpoint}/${taskId}`); }
 }

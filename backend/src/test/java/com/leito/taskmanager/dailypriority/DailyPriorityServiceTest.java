@@ -7,6 +7,7 @@ import com.leito.taskmanager.user.application.UserService;
 import com.leito.taskmanager.user.domain.User;
 import com.leito.taskmanager.task.domain.Task;
 import com.leito.taskmanager.task.domain.TaskPriority;
+import com.leito.taskmanager.task.domain.TaskStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,8 +18,35 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import java.util.Optional;
 import java.time.LocalDate;
+import java.util.List;
 
 class DailyPriorityServiceTest {
+    @Test
+    void suggestsAtMostTwoUnfinishedPrioritiesFromYesterday() {
+        DailyPriorityRepository priorities = mock(DailyPriorityRepository.class);
+        User user = new User("user@taskflow.local", "hash");
+        Task first = new Task("Finaliser la présentation", null, TaskPriority.HIGH, TaskStatus.IN_PROGRESS, null, user);
+        Task completed = new Task("Envoyer le compte rendu", null, TaskPriority.MEDIUM, TaskStatus.DONE, null, user);
+        Task second = new Task("Préparer la réunion", null, TaskPriority.MEDIUM, TaskStatus.TODO, null, user);
+        Task third = new Task("Relire le contrat", null, TaskPriority.LOW, TaskStatus.TODO, null, user);
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        when(priorities.findAllByOwnerEmailAndPriorityDateOrderByPositionAsc("user@taskflow.local", yesterday))
+                .thenReturn(List.of(
+                        new com.leito.taskmanager.dailypriority.domain.DailyPriority(user, first, yesterday, 1),
+                        new com.leito.taskmanager.dailypriority.domain.DailyPriority(user, completed, yesterday, 2),
+                        new com.leito.taskmanager.dailypriority.domain.DailyPriority(user, second, yesterday, 3),
+                        new com.leito.taskmanager.dailypriority.domain.DailyPriority(user, third, yesterday, 4)
+                ));
+
+        var suggestions = new DailyPriorityService(priorities, mock(TaskRepository.class), mock(UserService.class))
+                .findYesterdaySuggestions("user@taskflow.local");
+
+        assertEquals(2, suggestions.size());
+        assertEquals("Finaliser la présentation", suggestions.get(0).title());
+        assertEquals("Préparer la réunion", suggestions.get(1).title());
+        assertEquals(yesterday, suggestions.get(0).previousDate());
+    }
+
     @Test
     void refusesFourthPriorityForToday() {
         DailyPriorityRepository priorities = mock(DailyPriorityRepository.class);
