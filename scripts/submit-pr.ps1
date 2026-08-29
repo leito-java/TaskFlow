@@ -3,6 +3,7 @@ param(
   [string]$Objective,
   [string[]]$Changes,
   [string]$RisksOrLimits = 'Aucun risque ou travail reporté identifié automatiquement.',
+  [switch]$RunE2E,
   [switch]$WaitForMerge,
   [ValidateRange(1, 120)][int]$TimeoutMinutes = 30
 )
@@ -45,7 +46,8 @@ function Get-PullRequestBody {
     [string]$PullRequestTitle,
     [string]$PullRequestObjective,
     [string[]]$PullRequestChanges,
-    [string]$PullRequestRisksOrLimits
+    [string]$PullRequestRisksOrLimits,
+    [bool]$E2EWasRun
   )
 
   if ([string]::IsNullOrWhiteSpace($PullRequestObjective)) {
@@ -59,6 +61,7 @@ function Get-PullRequestBody {
   }
 
   $changeLines = ($PullRequestChanges | ForEach-Object { "- $_" }) -join [Environment]::NewLine
+  $e2eCheckbox = if ($E2EWasRun) { 'x' } else { ' ' }
 
   return @"
 ## Objectif
@@ -73,6 +76,7 @@ $changeLines
 
 - [x] ``npm test`` dans ``frontend``
 - [x] ``npm run build`` dans ``frontend``
+- [$e2eCheckbox] ``npm run test:e2e`` dans ``frontend`` (sinon exécuté par la CI)
 - [x] ``mvn verify`` dans ``backend``
 
 ## À vérifier avant la fusion
@@ -127,6 +131,12 @@ Push-Location frontend
 try {
   Invoke-CheckedCommand npm @('test')
   Invoke-CheckedCommand npm @('run', 'build')
+  if ($RunE2E) {
+    Write-Host "Parcours E2E Playwright demandé explicitement..." -ForegroundColor Cyan
+    Invoke-CheckedCommand npm @('run', 'test:e2e')
+  } else {
+    Write-Host "Parcours E2E reporté à la CI (utilise -RunE2E pour le lancer aussi en local)." -ForegroundColor Yellow
+  }
 } finally {
   Pop-Location
 }
@@ -153,7 +163,8 @@ if ($null -eq $pullRequest) {
     -PullRequestTitle $Title `
     -PullRequestObjective $Objective `
     -PullRequestChanges $Changes `
-    -PullRequestRisksOrLimits $RisksOrLimits
+    -PullRequestRisksOrLimits $RisksOrLimits `
+    -E2EWasRun $RunE2E.IsPresent
 
   $createArguments = @('pr', 'create', '--base', 'main', '--head', $branch, '--title', $Title, '--body', $description)
   $createOutput = & $ghCommand @createArguments

@@ -105,6 +105,16 @@ npm test
 npm run build
 ```
 
+Parcours end-to-end (le backend et PostgreSQL doivent être disponibles ; Playwright réutilise les serveurs déjà lancés) :
+
+```powershell
+cd frontend
+npm run test:e2e:install
+npm run test:e2e
+```
+
+Le scénario crée un compte temporaire unique, puis vérifie l'inscription, les projets, les tâches, le focus quotidien, la déconnexion et la persistance après reconnexion. Le rapport HTML est écrit dans `frontend/playwright-report/` uniquement pour le diagnostic local ou la CI.
+
 Backend :
 
 ```powershell
@@ -112,7 +122,7 @@ cd backend
 mvn verify
 ```
 
-La CI exécute ces vérifications avec Node 24, Java 21 et un vrai service PostgreSQL.
+La CI exécute ces vérifications avec Node 24, Java 21, Chromium et un vrai service PostgreSQL isolé.
 
 ## Organisation
 

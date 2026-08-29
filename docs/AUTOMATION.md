@@ -19,6 +19,16 @@ Dans GitHub, activez **Allow auto-merge** dans **Settings → General → Pull R
 
 Après avoir vérifié et créé un commit sur une branche dédiée :
 
+Depuis une invite de commandes Windows ouverte à la racine de TaskFlow, la commande courte suffit :
+
+```cmd
+submit-pr
+```
+
+Elle utilise automatiquement le titre du dernier commit, attend la CI et synchronise `main` après la fusion.
+
+Pour personnaliser précisément la description de la Pull Request, utilisez la version PowerShell complète :
+
 ```powershell
 .\scripts\submit-pr.ps1 `
   -Title "feat: ajouter l'exemple" `
@@ -28,7 +38,11 @@ Après avoir vérifié et créé un commit sur une branche dédiée :
   -WaitForMerge
 ```
 
-Le script exécute `npm test`, `npm run build` et `mvn verify`, puis active le **Squash auto-merge**. Avec `-WaitForMerge`, il attend au plus 30 minutes la fusion avant de basculer sur `main` et de lancer `git pull --ff-only`.
+Le script exécute rapidement `npm test`, `npm run build` et `mvn verify`, puis active le **Squash auto-merge**. Le parcours Playwright reste obligatoire dans la CI GitHub, qui dispose de sa propre base PostgreSQL. Cette séparation évite de bloquer la création de PR lorsqu'un serveur local est déjà occupé ou mal configuré.
+
+Pour lancer volontairement le parcours complet aussi en local, ajoutez `-RunE2E`. Le backend et PostgreSQL doivent alors être disponibles ; Playwright réutilise les serveurs locaux existants.
+
+Avec `-WaitForMerge`, le script attend au plus 30 minutes la fusion avant de basculer sur `main` et de lancer `git pull --ff-only`.
 
 Il génère aussi une description de PR homogène : objectif, changements, vérifications automatisées réellement réussies, checklist manuelle et risques. `-Title`, `-Objective`, `-Changes` et `-RisksOrLimits` sont personnalisables. Sans titre, le script reprend le titre du dernier commit ; sans changements, il indique de consulter le diff de la PR.
 
