@@ -7,7 +7,7 @@ import { Task, TaskFilter } from '../../task.model';
 import { ProjectApiService } from '../../project-api.service';
 import { Project } from '../../task.model';
 import { TaskStore } from '../../task.store';
-import { DailyPriority, DailyPriorityApiService } from '../../daily-priority-api.service';
+import { DailyPriority, DailyPriorityApiService, DailyPrioritySuggestion } from '../../daily-priority-api.service';
 import { ApiErrorService } from '../../api-error.service';
 import { OnboardingService } from '../../onboarding.service';
 
@@ -34,7 +34,11 @@ export class TaskListPageComponent {
   private readonly apiErrors = inject(ApiErrorService);
   private readonly onboarding = inject(OnboardingService);
   protected readonly dailyPriorities = signal<DailyPriority[]>([]);
+  protected readonly prioritySuggestions = signal<DailyPrioritySuggestion[]>([]);
   protected readonly priorityError = signal<string | null>(null);
+  protected readonly visiblePrioritySuggestions = computed(() =>
+    this.prioritySuggestions().slice(0, Math.max(0, 3 - this.dailyPriorities().length)),
+  );
   protected readonly completionPercentage = computed(() => {
     const total = this.store.taskCount();
     return total === 0 ? 0 : Math.round((this.store.completedTaskCount() / total) * 100);
@@ -44,6 +48,14 @@ export class TaskListPageComponent {
     this.store.loadTasks();
     this.projectApi.getProjects().subscribe({ next: (projects) => this.projects.set(projects) });
     this.loadDailyPriorities();
+    this.loadPrioritySuggestions();
+  }
+
+  protected loadPrioritySuggestions(): void {
+    this.dailyPriorityApi.getSuggestions().subscribe({
+      next: (suggestions) => this.prioritySuggestions.set(suggestions),
+      error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Impossible de charger les priorités de la veille.')),
+    });
   }
 
   protected loadDailyPriorities(): void {
@@ -57,10 +69,15 @@ export class TaskListPageComponent {
     this.dailyPriorityApi.add(taskId).subscribe({
       next: () => {
         this.loadDailyPriorities();
+        this.prioritySuggestions.update((suggestions) => suggestions.filter((suggestion) => suggestion.taskId !== taskId));
         this.onboarding.completeStep('daily-priorities');
       },
       error: (error: unknown) => this.priorityError.set(this.apiErrors.message(error, 'Vous pouvez choisir au maximum trois priorités.')),
     });
+  }
+
+  protected dismissPrioritySuggestion(taskId: number): void {
+    this.prioritySuggestions.update((suggestions) => suggestions.filter((suggestion) => suggestion.taskId !== taskId));
   }
 
   protected removeDailyPriority(taskId: number): void {

@@ -32,6 +32,7 @@ La fonctionnalité s'adresse d'abord aux étudiants, juniors développeurs et fr
 - Une priorité non terminée n'est jamais reconduite automatiquement.
 - Le lendemain, TaskFlow propose au maximum deux priorités inachevées de la veille avec l'action `Reprendre`.
 - L'utilisateur peut reprendre zéro, une ou deux suggestions ; chaque choix occupe une place parmi les trois priorités du nouveau jour.
+- L'action `Ignorer` masque une suggestion pour la session courante sans supprimer ni terminer la tâche.
 - Une suggestion ignorée reste une tâche normale dans son projet et n'est ni supprimée ni modifiée.
 - La date d'échéance aide à suggérer les tâches urgentes, mais ne décide jamais automatiquement du focus de l'utilisateur.
 
@@ -59,6 +60,8 @@ Le bloc affiche :
 Backend : créer l'entité `DailyPriority` contenant `userId`, `taskId`, `priorityDate` et `position`. Une contrainte de base de données doit empêcher le doublon `(user_id, task_id, priority_date)`.
 
 Frontend : ajouter un service API dédié, un état local des priorités du jour et un composant réutilisable `DailyPrioritiesComponent`.
+
+API de reprise : `GET /api/daily-priorities/suggestions` renvoie au maximum deux tâches inachevées sélectionnées la veille. La reprise utilise le `POST /api/daily-priorities` existant afin de conserver la limite de trois et l'isolation par utilisateur.
 
 ## Hors périmètre V1
 

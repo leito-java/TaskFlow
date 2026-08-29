@@ -14,6 +14,20 @@ import { AuthService } from './auth.service';
 import { ProjectApiService } from './project-api.service';
 import { TaskStore } from './task.store';
 import { OnboardingService } from './onboarding.service';
+import { DailyPriorityApiService, DailyPrioritySuggestion } from './daily-priority-api.service';
+
+class FakeDailyPriorityApiService {
+  suggestions: DailyPrioritySuggestion[] = [];
+  addedTaskIds: number[] = [];
+
+  getToday() { return of([]); }
+  getSuggestions() { return of(this.suggestions); }
+  add(taskId: number) {
+    this.addedTaskIds.push(taskId);
+    return of({ id: 1, taskId, title: 'Priorité reprise', position: 1 });
+  }
+  remove() { return of(undefined); }
+}
 
 class FakeTaskApiService {
   private readonly tasks: Task[] = [
@@ -58,8 +72,25 @@ describe('routes', () => {
         { provide: AuthService, useValue: { isAuthenticated: () => true } },
         { provide: ProjectApiService, useValue: { projects: signal([]), getProjects: () => of([]) } },
         { provide: OnboardingService, useValue: { completeStep: () => false } },
+        { provide: DailyPriorityApiService, useClass: FakeDailyPriorityApiService },
       ],
     });
+  });
+
+  it('propose de reprendre une priorité inachevée de la veille', async () => {
+    const dailyApi = TestBed.inject(DailyPriorityApiService) as unknown as FakeDailyPriorityApiService;
+    dailyApi.suggestions = [{ taskId: 2, title: 'Organiser la prochaine livraison', previousDate: '2026-08-28' }];
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/tasks', TaskListPageComponent);
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Souhaitez-vous reprendre une priorité ?');
+    const resumeButton = Array.from(harness.routeNativeElement!.querySelectorAll('button'))
+      .find((button) => button.textContent?.includes('Reprendre')) as HTMLButtonElement;
+    resumeButton.click();
+
+    expect(dailyApi.addedTaskIds).toEqual([2]);
   });
 
   it('affiche la page d’accueil pour /', async () => {

@@ -42,6 +42,26 @@
       </div>
     </div>
     @if (priorityError()) { <p class="api-message error-message" role="alert">{{ priorityError() }}</p> }
+    @if (visiblePrioritySuggestions().length > 0) {
+      <aside class="priority-suggestions" aria-labelledby="priority-suggestions-title">
+        <div>
+          <p>La veille</p>
+          <h3 id="priority-suggestions-title">Souhaitez-vous reprendre une priorité ?</h3>
+          <span>Ces tâches sont restées inachevées. Vous gardez la main : reprenez-en zéro, une ou deux.</span>
+        </div>
+        <ul>
+          @for (suggestion of visiblePrioritySuggestions(); track suggestion.taskId) {
+            <li>
+              <strong>{{ suggestion.title }}</strong>
+              <div>
+                <button class="suggestion-dismiss" type="button" (click)="dismissPrioritySuggestion(suggestion.taskId)" [attr.aria-label]="'Ignorer la suggestion ' + suggestion.title">Ignorer</button>
+                <button class="suggestion-resume" type="button" (click)="addDailyPriority(suggestion.taskId)">Reprendre</button>
+              </div>
+            </li>
+          }
+        </ul>
+      </aside>
+    }
     @if (dailyPriorities().length === 0) {
       <div class="priority-empty">
         <span aria-hidden="true">◎</span>

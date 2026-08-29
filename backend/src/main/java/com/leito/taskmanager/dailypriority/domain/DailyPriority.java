@@ -15,5 +15,6 @@ public class DailyPriority {
   protected DailyPriority() { }
   public DailyPriority(User owner, Task task, LocalDate priorityDate, int position) { this.owner=owner; this.task=task; this.priorityDate=priorityDate; this.position=position; }
   public Long getId() { return id; } public Task getTask() { return task; } public int getPosition() { return position; }
+  public LocalDate getPriorityDate() { return priorityDate; }
   public void moveTo(int position) { this.position = position; }
 }
