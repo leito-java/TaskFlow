@@ -28,6 +28,7 @@ test('un utilisateur organise et retrouve son travail', async ({ page }, testInf
     await page.getByLabel('Titre de la tâche').fill(taskTitle);
     await page.getByLabel('Description').fill('Parcours critique automatisé avec Playwright');
     await page.getByLabel('Niveau de priorité').selectOption('high');
+    await page.getByLabel('Durée estimée').fill('45');
     await page.getByLabel('Projet').selectOption({ label: projectName });
     await page.getByRole('button', { name: 'Ajouter la tâche' }).click();
     await expect(page).toHaveURL(/\/tasks$/);
@@ -36,7 +37,9 @@ test('un utilisateur organise et retrouve son travail', async ({ page }, testInf
 
   await test.step('Ajouter la tâche au focus et la terminer', async () => {
     await page.getByRole('button', { name: taskTitle, exact: true }).click();
-    await expect(page.getByRole('region', { name: 'Mes priorités du jour' })).toContainText(taskTitle);
+    const dailyFocus = page.getByRole('region', { name: 'Mes priorités du jour' });
+    await expect(dailyFocus).toContainText(taskTitle);
+    await expect(dailyFocus).toContainText('Charge prévue : 45 min');
 
     const taskCard = page.getByRole('article').filter({ hasText: taskTitle });
     await taskCard.getByRole('checkbox', { name: 'Marquer la tâche comme terminée' }).check();

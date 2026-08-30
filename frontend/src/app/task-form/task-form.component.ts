@@ -45,6 +45,7 @@ export class TaskFormComponent {
     status: new FormControl<TaskStatus>('todo', { nonNullable: true }),
     // Un input date renvoie une chaîne ISO vide lorsqu'aucune date n'est choisie.
     dueDate: new FormControl('', { nonNullable: true }),
+    estimatedMinutes: new FormControl<number | null>(null, { validators: [Validators.min(5), Validators.max(1440)] }),
     projectId: new FormControl<number | null>(null),
   });
 
@@ -63,6 +64,7 @@ export class TaskFormComponent {
           priority: task?.priority ?? 'medium',
           status: task?.status ?? 'todo',
           dueDate: task?.dueDate ?? '',
+          estimatedMinutes: task?.estimatedMinutes ?? null,
           projectId: task?.projectId ?? null,
         });
     });
@@ -74,6 +76,7 @@ export class TaskFormComponent {
         priority: value.priority ?? 'medium',
         status: value.status ?? 'todo',
         dueDate: value.dueDate ?? '',
+        estimatedMinutes: value.estimatedMinutes ?? null,
         projectId: value.projectId ?? null,
       });
     });
@@ -96,14 +99,14 @@ export class TaskFormComponent {
     });
     // Après une création, prépare le formulaire pour une nouvelle tâche.
     if (!this.task() && !this.onboarding.open()) {
-      this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
+      this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null });
     }
     // Masque les messages liés à la tentative précédente.
     this.submitted.set(false);
   }
 
   /** Affiche une erreur après visite du champ ou tentative de soumission. */
-  protected shouldShowError(field: 'title' | 'description'): boolean {
+  protected shouldShowError(field: 'title' | 'description' | 'estimatedMinutes'): boolean {
     // Récupère le contrôle demandé.
     const control = this.form.controls[field];
     // Une erreur apparaît seulement si le champ invalide a déjà été utilisé.

@@ -42,6 +42,7 @@ describe('TaskApiService', () => {
       priority: 'medium' as const,
       status: 'todo' as const,
       dueDate: null,
+      estimatedMinutes: 45,
     };
 
     service.createTask(draft).subscribe((task) => expect(task.id).toBe(7));
@@ -59,6 +60,7 @@ describe('TaskApiService', () => {
       priority: 'high' as const,
       status: 'done' as const,
       dueDate: '2026-09-20',
+      estimatedMinutes: 90,
     };
 
     service.updateTask(7, update).subscribe((task) => expect(task.completed).toBe(true));

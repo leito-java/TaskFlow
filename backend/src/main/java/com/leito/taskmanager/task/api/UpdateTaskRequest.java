@@ -6,6 +6,8 @@ import com.leito.taskmanager.task.domain.TaskStatus;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -27,7 +29,11 @@ public record UpdateTaskRequest(
         LocalDate dueDate,
 
         Boolean completed,
-        Long projectId
+        Long projectId,
+
+        @Min(value = 5, message = "La durée estimée doit être d'au moins 5 minutes")
+        @Max(value = 1440, message = "La durée estimée ne doit pas dépasser 24 heures")
+        Integer estimatedMinutes
 ) {
     public UpdateTaskRequest {
         if (title != null) title = title.trim();

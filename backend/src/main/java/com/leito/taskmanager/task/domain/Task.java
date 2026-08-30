@@ -42,6 +42,9 @@ public class Task {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Column(name = "estimated_minutes")
+    private Integer estimatedMinutes;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
@@ -66,11 +69,24 @@ public class Task {
             LocalDate dueDate,
             User owner
     ) {
+        this(title, description, priority, status, dueDate, null, owner);
+    }
+
+    public Task(
+            String title,
+            String description,
+            TaskPriority priority,
+            TaskStatus status,
+            LocalDate dueDate,
+            Integer estimatedMinutes,
+            User owner
+    ) {
         this.title = Objects.requireNonNull(title);
         this.description = description;
         this.priority = Objects.requireNonNull(priority);
         this.status = Objects.requireNonNull(status);
         this.dueDate = dueDate;
+        this.estimatedMinutes = estimatedMinutes;
         this.owner = Objects.requireNonNull(owner);
     }
 
@@ -101,6 +117,7 @@ public class Task {
     public LocalDate getDueDate() {
         return dueDate;
     }
+    public Integer getEstimatedMinutes() { return estimatedMinutes; }
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
 
@@ -110,12 +127,14 @@ public class Task {
             String description,
             TaskPriority priority,
             TaskStatus status,
-            LocalDate dueDate
+            LocalDate dueDate,
+            Integer estimatedMinutes
     ) {
         this.title = Objects.requireNonNull(title);
         this.description = description;
         this.priority = Objects.requireNonNull(priority);
         this.status = Objects.requireNonNull(status);
         this.dueDate = dueDate;
+        this.estimatedMinutes = estimatedMinutes;
     }
 }

@@ -43,6 +43,8 @@ export class TaskListPageComponent {
     const total = this.store.taskCount();
     return total === 0 ? 0 : Math.round((this.store.completedTaskCount() / total) * 100);
   });
+  protected readonly dailyEstimatedMinutes = computed(() => this.dailyPriorities()
+    .reduce((total, priority) => total + (this.taskForPriority(priority.taskId)?.estimatedMinutes ?? 0), 0));
 
   constructor() {
     this.store.loadTasks();
@@ -92,6 +94,13 @@ export class TaskListPageComponent {
 
   protected priorityLabel(priority: Task['priority']): string {
     return { low: 'Basse', medium: 'Moyenne', high: 'Haute' }[priority];
+  }
+
+  protected formatDuration(minutes: number): string {
+    if (minutes < 60) return `${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    return remainder === 0 ? `${hours} h` : `${hours} h ${remainder} min`;
   }
 
   protected openTask(taskId: number): void {

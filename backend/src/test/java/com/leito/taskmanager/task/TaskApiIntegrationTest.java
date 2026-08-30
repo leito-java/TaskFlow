@@ -59,7 +59,8 @@ class TaskApiIntegrationTest {
                                   "description":"Brancher HttpClient à l'API",
                                   "priority":"high",
                                   "status":"in-progress",
-                                  "dueDate":"2026-09-15"
+                                  "dueDate":"2026-09-15",
+                                  "estimatedMinutes":45
                                 }
                                 """))
                 .andExpect(status().isCreated())
@@ -74,7 +75,8 @@ class TaskApiIntegrationTest {
                 .andExpect(jsonPath("$.title").value("Connecter Angular"))
                 .andExpect(jsonPath("$.description").value("Brancher HttpClient à l'API"))
                 .andExpect(jsonPath("$.priority").value("high"))
-                .andExpect(jsonPath("$.dueDate").value("2026-09-15"));
+                .andExpect(jsonPath("$.dueDate").value("2026-09-15"))
+                .andExpect(jsonPath("$.estimatedMinutes").value(45));
     }
 
     @Test
@@ -90,12 +92,14 @@ class TaskApiIntegrationTest {
                                   "description":"Description détaillée",
                                   "priority":"medium",
                                   "status":"done",
-                                  "dueDate":"2026-09-20"
+                                  "dueDate":"2026-09-20",
+                                  "estimatedMinutes":90
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Nouveau titre"))
                 .andExpect(jsonPath("$.status").value("done"))
+                .andExpect(jsonPath("$.estimatedMinutes").value(90))
                 .andExpect(jsonPath("$.completed").value(true));
     }
 
@@ -137,6 +141,18 @@ class TaskApiIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Validation impossible"))
                 .andExpect(jsonPath("$.fieldErrors.title").exists());
+    }
+
+    @Test
+    void rejectInvalidEstimatedDuration() throws Exception {
+        mockMvc.perform(post("/api/tasks")
+                        .with(authenticated())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Tâche trop courte", "priority":"high", "estimatedMinutes":3}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.estimatedMinutes").exists());
     }
 
     @Test

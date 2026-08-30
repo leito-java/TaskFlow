@@ -7,11 +7,11 @@ import { TaskFormComponent } from './task-form.component';
 describe('TaskFormComponent', () => {
   let fixture: ComponentFixture<TaskFormComponent>;
   let guideOpen: ReturnType<typeof signal<boolean>>;
-  let guideDraft: ReturnType<typeof signal<{ title: string; description: string; priority: 'medium'; status: 'todo'; dueDate: string; projectId: number | null }>>;
+  let guideDraft: ReturnType<typeof signal<{ title: string; description: string; priority: 'medium'; status: 'todo'; dueDate: string; estimatedMinutes: number | null; projectId: number | null }>>;
 
   beforeEach(() => {
     guideOpen = signal(false);
-    guideDraft = signal({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', projectId: null });
+    guideDraft = signal({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null });
     TestBed.configureTestingModule({
       imports: [TaskFormComponent],
       providers: [{ provide: OnboardingService, useValue: {
@@ -36,12 +36,13 @@ describe('TaskFormComponent', () => {
   });
 
   it('restaure le brouillon lorsque l’utilisateur revient dans le guide', () => {
-    guideDraft.set({ title: 'Préparer le module Angular', description: 'Chapitre routing', priority: 'medium', status: 'todo', dueDate: '2026-09-10', projectId: 7 });
+    guideDraft.set({ title: 'Préparer le module Angular', description: 'Chapitre routing', priority: 'medium', status: 'todo', dueDate: '2026-09-10', estimatedMinutes: 45, projectId: 7 });
     guideOpen.set(true);
     fixture.detectChanges();
 
     expect((fixture.nativeElement.querySelector('#task') as HTMLInputElement).value).toBe('Préparer le module Angular');
     expect((fixture.nativeElement.querySelector('#due-date') as HTMLInputElement).value).toBe('2026-09-10');
+    expect((fixture.nativeElement.querySelector('#estimated-minutes') as HTMLInputElement).value).toBe('45');
   });
 
   it('affiche une erreur après interaction avec un titre invalide', () => {
@@ -87,6 +88,7 @@ describe('TaskFormComponent', () => {
       priority: 'high',
       status: 'todo',
       dueDate: null,
+      estimatedMinutes: null,
       projectId: null,
     });
   });
@@ -104,6 +106,16 @@ describe('TaskFormComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('1000 caractères');
   });
 
+  it('refuse une durée estimée inférieure à cinq minutes', () => {
+    const duration: HTMLInputElement = fixture.nativeElement.querySelector('#estimated-minutes');
+    duration.value = '3';
+    duration.dispatchEvent(new Event('input'));
+    duration.dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('comprise entre 5 et 1 440 minutes');
+  });
+
   it('préremplit puis enregistre le formulaire en mode modification', () => {
     fixture.componentRef.setInput('task', {
       id: 7,
@@ -112,6 +124,7 @@ describe('TaskFormComponent', () => {
       priority: 'low',
       status: 'in-progress',
       dueDate: '2026-09-15',
+      estimatedMinutes: 90,
       completed: false,
     });
     fixture.detectChanges();
@@ -129,6 +142,7 @@ describe('TaskFormComponent', () => {
     expect(select.value).toBe('low');
     expect(status.value).toBe('in-progress');
     expect(dueDate.value).toBe('2026-09-15');
+    expect((fixture.nativeElement.querySelector('#estimated-minutes') as HTMLInputElement).value).toBe('90');
     expect(button.textContent).toContain('Enregistrer');
 
     input.value = 'Titre modifié';
@@ -143,6 +157,7 @@ describe('TaskFormComponent', () => {
       priority: 'high',
       status: 'in-progress',
       dueDate: '2026-09-15',
+      estimatedMinutes: 90,
       projectId: null,
     });
   });

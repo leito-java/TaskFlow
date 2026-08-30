@@ -35,6 +35,9 @@
         <p>Focus quotidien</p>
         <h2 id="daily-priorities-title">Mes priorités du jour</h2>
         <span>Concentrez-vous sur les trois tâches qui comptent vraiment aujourd’hui.</span>
+        @if (dailyEstimatedMinutes() > 0) {
+          <span class="focus-duration">Charge prévue : <strong>{{ formatDuration(dailyEstimatedMinutes()) }}</strong></span>
+        }
       </div>
       <div class="priority-progress" [attr.aria-label]="dailyPriorities().length + ' priorités sur 3'">
         <strong>{{ dailyPriorities().length }}</strong>
@@ -79,6 +82,7 @@
                 {{ task.projectName || 'Sans projet' }}
                 <i aria-hidden="true">•</i>
                 <em class="priority-badge" [attr.data-priority]="task.priority">Priorité {{ priorityLabel(task.priority).toLocaleLowerCase() }}</em>
+                @if (task.estimatedMinutes) { <i aria-hidden="true">•</i><span>{{ formatDuration(task.estimatedMinutes) }}</span> }
               </span>
             }
           </button>
