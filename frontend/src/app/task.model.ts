@@ -19,6 +19,8 @@ export interface TaskDraft {
   status: TaskStatus;
   // Date ISO YYYY-MM-DD, ou null lorsque l'échéance est absente.
   dueDate: string | null;
+  // Temps prévu pour réaliser la tâche, entre 5 minutes et 24 heures.
+  estimatedMinutes?: number | null;
   projectId?: number | null;
 }
 

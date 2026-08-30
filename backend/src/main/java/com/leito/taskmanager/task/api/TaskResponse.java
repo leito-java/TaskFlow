@@ -16,7 +16,8 @@ public record TaskResponse(
         LocalDate dueDate,
         boolean completed,
         Long projectId,
-        String projectName
+        String projectName,
+        Integer estimatedMinutes
 ) {
     public static TaskResponse from(Task task) {
         return new TaskResponse(
@@ -28,7 +29,8 @@ public record TaskResponse(
                 task.getDueDate(),
                 task.isCompleted(),
                 task.getProject() == null ? null : task.getProject().getId(),
-                task.getProject() == null ? null : task.getProject().getName()
+                task.getProject() == null ? null : task.getProject().getName(),
+                task.getEstimatedMinutes()
         );
     }
 }

@@ -36,6 +36,10 @@ class PostgresMigrationIntegrationTest {
                 "SELECT COUNT(*) FROM flyway_schema_history WHERE version = '6' AND success = TRUE",
                 Long.class
         );
+        Long estimatedDurationMigration = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM flyway_schema_history WHERE version = '7' AND success = TRUE",
+                Long.class
+        );
         Long legacyOwnerId = jdbcTemplate.queryForObject(
                 "SELECT id FROM app_users WHERE email = 'legacy@taskflow.local'",
                 Long.class
@@ -43,14 +47,15 @@ class PostgresMigrationIntegrationTest {
 
         jdbcTemplate.update(
                 """
-                INSERT INTO tasks (title, description, priority, status, due_date, owner_id)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO tasks (title, description, priority, status, due_date, estimated_minutes, owner_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 "Tester la migration PostgreSQL",
                 "Vérifier la deuxième migration",
                 "HIGH",
                 "IN_PROGRESS",
                 LocalDate.of(2026, 9, 15),
+                45,
                 legacyOwnerId
         );
 
@@ -81,11 +86,12 @@ class PostgresMigrationIntegrationTest {
                 Long.class
         );
 
-        // Une future V6 ne doit pas casser ce test : on contrôle la présence de V5,
-        // et non un nombre total de migrations figé dans le temps.
-        assertThat(successfulMigrations).isGreaterThanOrEqualTo(6);
+        // Une future migration ne doit pas casser ce test : on contrôle les
+        // contrats importants sans figer définitivement le nombre total.
+        assertThat(successfulMigrations).isGreaterThanOrEqualTo(7);
         assertThat(dailyPriorityMigration).isEqualTo(1);
         assertThat(projectAppearanceMigration).isEqualTo(1);
+        assertThat(estimatedDurationMigration).isEqualTo(1);
         assertThat(taskStatus).isEqualTo("IN_PROGRESS");
         assertThat(removedCompletedColumns).isZero();
         assertThat(dailyPrioritiesTable).isEqualTo(1);

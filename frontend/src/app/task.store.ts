@@ -95,6 +95,7 @@ export class TaskStore {
       priority: current.priority,
       status: current.status === 'done' ? 'todo' : 'done',
       dueDate: current.dueDate,
+      estimatedMinutes: current.estimatedMinutes ?? null,
       projectId: current.projectId,
     }).subscribe({
       next: (task) => {

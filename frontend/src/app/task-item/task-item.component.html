@@ -40,6 +40,9 @@
         @if (task().dueDate) {
           <time class="due-date" [attr.datetime]="task().dueDate">Échéance {{ task().dueDate }}</time>
         }
+        @if (task().estimatedMinutes) {
+          <span class="estimated-duration">Durée prévue {{ task().estimatedMinutes }} min</span>
+        }
       </span>
     </span>
   </label>

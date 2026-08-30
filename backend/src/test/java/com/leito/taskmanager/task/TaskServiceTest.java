@@ -44,7 +44,8 @@ class TaskServiceTest {
                 TaskPriority.HIGH,
                 null,
                 dueDate,
-                null
+                null,
+                45
         ), "test@taskflow.local");
 
         assertThat(response.title()).isEqualTo("Apprendre HttpClient");
@@ -52,6 +53,7 @@ class TaskServiceTest {
         assertThat(response.priority()).isEqualTo(TaskPriority.HIGH);
         assertThat(response.status()).isEqualTo(TaskStatus.TODO);
         assertThat(response.dueDate()).isEqualTo(dueDate);
+        assertThat(response.estimatedMinutes()).isEqualTo(45);
         assertThat(response.completed()).isFalse();
     }
 }

@@ -7,7 +7,7 @@ TaskFlow est une application full-stack de gestion de tâches construite avec An
 ## Fonctionnalités actuelles
 
 - créer, consulter, modifier et supprimer une tâche ;
-- définir une description, une priorité, un statut, une échéance et un projet ;
+- définir une description, une priorité, un statut, une échéance, une durée estimée et un projet ;
 - créer des projets personnels et y associer des tâches ;
 - filtrer les tâches à faire, en cours ou terminées ;
 - rechercher une tâche et trier la liste par priorité ou échéance ;
@@ -15,6 +15,7 @@ TaskFlow est une application full-stack de gestion de tâches construite avec An
 - créer un compte, se connecter, se déconnecter et modifier son mot de passe ;
 - gérer les états de chargement, d'erreur et de liste vide ;
 - naviguer entre accueil, liste, formulaire et page À propos.
+- visualiser la charge totale estimée des trois priorités du jour.
 
 ## Architecture
 

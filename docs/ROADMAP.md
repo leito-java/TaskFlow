@@ -42,7 +42,7 @@
 ## Idées à évaluer après la V1
 
 - [x] proposer au maximum deux priorités inachevées de la veille, avec reprise manuelle ;
-- [ ] durée estimée d'une tâche et charge totale des trois priorités ;
+- [x] durée estimée d'une tâche et charge totale des trois priorités ;
 - [ ] date de planification distincte de la date d'échéance ;
 - [ ] comparaison entre temps estimé et temps réellement passé.
 

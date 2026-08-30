@@ -24,6 +24,7 @@ class FakeTaskApiService {
       priority: 'high',
       status: 'in-progress',
       dueDate: '2026-09-15',
+      estimatedMinutes: 60,
       completed: false,
     },
   ];
@@ -107,6 +108,7 @@ describe('TaskStore', () => {
     expect(notifications.current()?.message).toContain('progression : 2 sur 2');
     expect(store.taskById(2)?.description).toBe('Découper la page');
     expect(store.taskById(2)?.dueDate).toBe('2026-09-15');
+    expect(store.taskById(2)?.estimatedMinutes).toBe(60);
 
     store.deleteTask(2);
     expect(store.taskById(2)).toBeNull();

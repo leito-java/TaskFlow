@@ -63,6 +63,15 @@
   </div>
 
   <div class="field-group">
+    <label for="estimated-minutes">Durée estimée <span>(facultative)</span></label>
+    <input id="estimated-minutes" type="number" min="5" max="1440" step="5" formControlName="estimatedMinutes" placeholder="Ex. 45" aria-describedby="estimated-minutes-help estimated-minutes-error">
+    <small id="estimated-minutes-help">Indiquez le temps prévu en minutes, entre 5 minutes et 24 heures.</small>
+    @if (shouldShowError('estimatedMinutes')) {
+      <p id="estimated-minutes-error" class="error">La durée doit être comprise entre 5 et 1 440 minutes.</p>
+    }
+  </div>
+
+  <div class="field-group">
     <label for="project">Projet <span>(facultatif)</span></label>
     <select id="project" formControlName="projectId">
       <option [ngValue]="null">Sans projet</option>

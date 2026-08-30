@@ -47,6 +47,7 @@ public class TaskService {
                 request.priority(),
                 initialStatus,
                 request.dueDate(),
+                request.estimatedMinutes(),
                 userService.findByEmail(email)
         );
         task.setProject(request.projectId() == null ? null : projectService.findOwned(request.projectId(), email));
@@ -61,7 +62,8 @@ public class TaskService {
                 request.description(),
                 request.priority(),
                 request.resolvedStatus(),
-                request.dueDate()
+                request.dueDate(),
+                request.estimatedMinutes()
         );
         task.setProject(request.projectId() == null ? null : projectService.findOwned(request.projectId(), email));
         return TaskResponse.from(task);
