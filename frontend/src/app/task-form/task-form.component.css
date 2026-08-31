@@ -129,6 +129,17 @@ button:disabled {
   line-height: 1.4;
 }
 
+.reminder-panel { border: 1px solid #ddd8fb; border-radius: 16px; padding: 18px; margin: 8px 0 20px; background: #faf9ff; }
+.reminder-panel legend { padding: 0 8px; font-weight: 700; color: #342c69; }
+.reminder-panel legend span { font-weight: 400; color: #77728d; }
+.reminder-guide-prompt, .reminder-guide { padding: 14px; margin-bottom: 16px; border-radius: 12px; background: #eeeaff; }
+.reminder-guide-prompt { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.reminder-guide-prompt div { display: grid; gap: 4px; }
+.reminder-guide-prompt span { color: #625d74; font-size: .9rem; }
+.reminder-guide ol { margin: 10px 0; padding-left: 22px; color: #504b62; }
+.reminder-guide button, .reminder-guide-prompt button { border: 0; border-radius: 9px; padding: 9px 12px; background: #6655db; color: white; cursor: pointer; }
+
 @media (max-width: 560px) {
   .field-row { grid-template-columns: 1fr; }
+  .reminder-guide-prompt { align-items: stretch; flex-direction: column; }
 }

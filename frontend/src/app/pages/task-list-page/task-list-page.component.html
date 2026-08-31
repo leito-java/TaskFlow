@@ -8,6 +8,23 @@
     <a routerLink="/tasks/new"><span aria-hidden="true">＋</span> Ajouter une tâche</a>
   </header>
 
+  @if (dueReminders().length > 0) {
+    <section class="reminder-center" aria-labelledby="reminder-center-title" aria-live="polite">
+      <div class="reminder-center-heading"><div><p>À votre attention</p><h2 id="reminder-center-title">{{ dueReminders().length }} rappel{{ dueReminders().length > 1 ? 's' : '' }}</h2></div><span aria-hidden="true">🔔</span></div>
+      @for (task of dueReminders(); track task.id) {
+        <article class="reminder-card">
+          <div><strong>{{ task.title }}</strong><span>{{ task.projectName || 'Sans projet' }} · prévu maintenant</span></div>
+          <div class="reminder-actions">
+            <button type="button" (click)="toggleTask(task.id)">Terminer</button>
+            <label><span class="sr-only">Durée du report</span><select #snooze><option value="5">5 min</option><option value="10">10 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">1 h</option></select></label>
+            <button type="button" (click)="snoozeReminder(task.id, +snooze.value)">Reporter</button>
+            <button class="reminder-read" type="button" (click)="readReminder(task.id)">Marquer comme lu</button>
+          </div>
+        </article>
+      }
+    </section>
+  }
+
   <section class="task-summary" aria-labelledby="task-progress-title" data-tour="task-progress">
     <div class="summary-heading">
       <div>

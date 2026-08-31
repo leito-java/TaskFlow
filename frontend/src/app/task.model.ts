@@ -22,6 +22,12 @@ export interface TaskDraft {
   // Temps prévu pour réaliser la tâche, entre 5 minutes et 24 heures.
   estimatedMinutes?: number | null;
   projectId?: number | null;
+  // Date et heure locales au format ISO utilisées par le rappel.
+  reminderAt?: string | null;
+  // Délai entre deux rappels lorsque l'utilisateur n'agit pas.
+  reminderRepeatMinutes?: number | null;
+  // Limite anti-spam : de une à trois occurrences.
+  reminderMaxOccurrences?: number | null;
 }
 
 // Tâche enregistrée : l'API ajoute l'identité et le booléen de compatibilité.
@@ -31,6 +37,7 @@ export interface Task extends TaskDraft {
   // Valeur dérivée de status par Java, conservée pendant la transition.
   completed: boolean;
   projectName?: string | null;
+  reminderRead?: boolean;
 }
 
 export type ProjectIcon = 'work' | 'study' | 'personal' | 'health' | 'finance' | 'code' | 'creative' | 'folder';

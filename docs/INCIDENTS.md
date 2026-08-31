@@ -79,3 +79,16 @@ La modification appliquée.
 ### Règle préventive
 Le contrôle, le test ou la convention ajouté pour empêcher la récidive.
 ```
+# 2026-08-31 — paramètre `WaitForMerge` transmis deux fois
+
+## Symptôme
+
+`submit-pr.cmd ... -WaitForMerge` échouait avec `ParameterAlreadyBound`.
+
+## Cause
+
+Le lanceur CMD ajoutait automatiquement `-WaitForMerge` tout en retransmettant les arguments saisis par l’utilisateur. PowerShell recevait donc deux fois le même paramètre.
+
+## Correction durable
+
+Le lanceur transmet désormais uniquement les arguments reçus. Le comportement d’attente est choisi explicitement avec `-WaitForMerge`, ce qui rend également possible une création de PR sans attente.

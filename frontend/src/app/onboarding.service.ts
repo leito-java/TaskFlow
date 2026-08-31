@@ -5,7 +5,7 @@ import { ProjectIcon, TaskPriority, TaskStatus } from './task.model';
 
 export interface OnboardingStep { eyebrow: string; title: string; description: string; route: string; action: string; target?: string; }
 export interface OnboardingProjectDraft { name: string; icon: ProjectIcon; color: string; }
-export interface OnboardingTaskDraft { title: string; description: string; priority: TaskPriority; status: TaskStatus; dueDate: string; estimatedMinutes: number | null; projectId: number | null; }
+export interface OnboardingTaskDraft { title: string; description: string; priority: TaskPriority; status: TaskStatus; dueDate: string; estimatedMinutes: number | null; projectId: number | null; reminderAt: string; reminderRepeatMinutes: number | null; reminderMaxOccurrences: number | null; }
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
@@ -14,7 +14,7 @@ export class OnboardingService {
   readonly open = signal(false);
   readonly stepIndex = signal(0);
   readonly projectDraft = signal<OnboardingProjectDraft>({ name: '', icon: 'work', color: '#6D5CE7' });
-  readonly taskDraft = signal<OnboardingTaskDraft>({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null });
+  readonly taskDraft = signal<OnboardingTaskDraft>({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null, reminderAt: '', reminderRepeatMinutes: null, reminderMaxOccurrences: 1 });
   readonly steps: OnboardingStep[] = [
     { eyebrow: 'Bienvenue', title: 'Prenez TaskFlow en main', description: 'Vous allez réellement créer un projet, une tâche et votre premier focus. Les zones à utiliser seront mises en évidence.', route: '/projects', action: 'Commencer le parcours' },
     { eyebrow: 'Étape 1 sur 4', title: 'Créez un projet', description: 'Utilisez la zone éclairée : saisissez un nom, choisissez une icône et une couleur, puis cliquez sur Créer le projet.', route: '/projects', action: "J’ai créé mon projet", target: 'project-creator' },
@@ -73,7 +73,7 @@ export class OnboardingService {
   private clearHighlight(): void { document.querySelector('.tour-highlight')?.classList.remove('tour-highlight'); }
   private clearDrafts(): void {
     this.projectDraft.set({ name: '', icon: 'work', color: '#6D5CE7' });
-    this.taskDraft.set({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null });
+    this.taskDraft.set({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null, reminderAt: '', reminderRepeatMinutes: null, reminderMaxOccurrences: 1 });
   }
 
   private rememberCompletion(): void {

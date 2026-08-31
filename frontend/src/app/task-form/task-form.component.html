@@ -79,6 +79,34 @@
     </select>
   </div>
 
+  <fieldset class="reminder-panel">
+    <legend>Rappel <span>(facultatif)</span></legend>
+    @if (shouldSuggestReminderGuide() && !reminderGuideOpen()) {
+      <div class="reminder-guide-prompt">
+        <div><strong>Première utilisation des rappels</strong><span>Découvrez leur fonctionnement au moment où vous en avez besoin.</span></div>
+        <button type="button" (click)="openReminderGuide()">Voir le guide</button>
+      </div>
+    }
+    @if (reminderGuideOpen()) {
+      <aside class="reminder-guide" aria-labelledby="reminder-guide-title">
+        <strong id="reminder-guide-title">Comment fonctionne un rappel ?</strong>
+        <ol><li>Choisissez quand être averti.</li><li>Ajoutez un report seulement si nécessaire.</li><li>TaskFlow s’arrête après trois alertes maximum pour éviter le spam.</li></ol>
+        <button type="button" (click)="closeReminderGuide()">J’ai compris</button>
+      </aside>
+    }
+    <div class="field-group">
+      <label for="reminder-at">Me rappeler le</label>
+      <input id="reminder-at" type="datetime-local" formControlName="reminderAt">
+      <small>Programmez le moment où TaskFlow doit attirer votre attention.</small>
+    </div>
+    @if (form.controls.reminderAt.value) {
+      <div class="field-row">
+        <div class="field-group"><label for="reminder-repeat">Répéter après</label><select id="reminder-repeat" formControlName="reminderRepeatMinutes"><option [ngValue]="null">Ne pas répéter</option><option [ngValue]="5">5 minutes</option><option [ngValue]="10">10 minutes</option><option [ngValue]="30">30 minutes</option><option [ngValue]="45">45 minutes</option><option [ngValue]="60">1 heure</option></select></div>
+        <div class="field-group"><label for="reminder-occurrences">Limite</label><select id="reminder-occurrences" formControlName="reminderMaxOccurrences"><option [ngValue]="1">1 notification</option><option [ngValue]="2">2 notifications</option><option [ngValue]="3">3 notifications</option></select></div>
+      </div>
+    }
+  </fieldset>
+
   <!-- Le bouton principal reste désactivé tant que le formulaire est invalide. -->
   <div class="actions">
     <button class="primary-button" type="submit" [disabled]="form.invalid || busy()">

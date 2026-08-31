@@ -51,6 +51,7 @@ public class TaskService {
                 userService.findByEmail(email)
         );
         task.setProject(request.projectId() == null ? null : projectService.findOwned(request.projectId(), email));
+        task.configureReminder(request.reminderAt(), request.reminderRepeatMinutes(), request.reminderMaxOccurrences());
         return TaskResponse.from(repository.save(task));
     }
 
@@ -66,6 +67,7 @@ public class TaskService {
                 request.estimatedMinutes()
         );
         task.setProject(request.projectId() == null ? null : projectService.findOwned(request.projectId(), email));
+        task.configureReminder(request.reminderAt(), request.reminderRepeatMinutes(), request.reminderMaxOccurrences());
         return TaskResponse.from(task);
     }
 
@@ -73,6 +75,20 @@ public class TaskService {
     public void delete(long id, String email) {
         Task task = findEntity(id, email);
         repository.delete(task);
+    }
+
+    @Transactional
+    public TaskResponse markReminderRead(long id, String email) {
+        Task task = findEntity(id, email);
+        task.markReminderRead();
+        return TaskResponse.from(task);
+    }
+
+    @Transactional
+    public TaskResponse snoozeReminder(long id, int minutes, String email) {
+        Task task = findEntity(id, email);
+        task.snoozeReminder(minutes);
+        return TaskResponse.from(task);
     }
 
     private Task findEntity(long id, String email) {

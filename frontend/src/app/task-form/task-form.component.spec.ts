@@ -7,11 +7,11 @@ import { TaskFormComponent } from './task-form.component';
 describe('TaskFormComponent', () => {
   let fixture: ComponentFixture<TaskFormComponent>;
   let guideOpen: ReturnType<typeof signal<boolean>>;
-  let guideDraft: ReturnType<typeof signal<{ title: string; description: string; priority: 'medium'; status: 'todo'; dueDate: string; estimatedMinutes: number | null; projectId: number | null }>>;
+  let guideDraft: ReturnType<typeof signal<{ title: string; description: string; priority: 'medium'; status: 'todo'; dueDate: string; estimatedMinutes: number | null; projectId: number | null; reminderAt: string; reminderRepeatMinutes: number | null; reminderMaxOccurrences: number | null }>>;
 
   beforeEach(() => {
     guideOpen = signal(false);
-    guideDraft = signal({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null });
+    guideDraft = signal({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null, reminderAt: '', reminderRepeatMinutes: null, reminderMaxOccurrences: 1 });
     TestBed.configureTestingModule({
       imports: [TaskFormComponent],
       providers: [{ provide: OnboardingService, useValue: {
@@ -36,7 +36,7 @@ describe('TaskFormComponent', () => {
   });
 
   it('restaure le brouillon lorsque l’utilisateur revient dans le guide', () => {
-    guideDraft.set({ title: 'Préparer le module Angular', description: 'Chapitre routing', priority: 'medium', status: 'todo', dueDate: '2026-09-10', estimatedMinutes: 45, projectId: 7 });
+    guideDraft.set({ title: 'Préparer le module Angular', description: 'Chapitre routing', priority: 'medium', status: 'todo', dueDate: '2026-09-10', estimatedMinutes: 45, projectId: 7, reminderAt: '', reminderRepeatMinutes: null, reminderMaxOccurrences: 1 });
     guideOpen.set(true);
     fixture.detectChanges();
 
@@ -90,6 +90,9 @@ describe('TaskFormComponent', () => {
       dueDate: null,
       estimatedMinutes: null,
       projectId: null,
+      reminderAt: null,
+      reminderRepeatMinutes: null,
+      reminderMaxOccurrences: null,
     });
   });
 
@@ -159,6 +162,9 @@ describe('TaskFormComponent', () => {
       dueDate: '2026-09-15',
       estimatedMinutes: 90,
       projectId: null,
+      reminderAt: null,
+      reminderRepeatMinutes: null,
+      reminderMaxOccurrences: null,
     });
   });
 });

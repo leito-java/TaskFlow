@@ -45,7 +45,10 @@ class TaskServiceTest {
                 null,
                 dueDate,
                 null,
-                45
+                45,
+                null,
+                null,
+                null
         ), "test@taskflow.local");
 
         assertThat(response.title()).isEqualTo("Apprendre HttpClient");
