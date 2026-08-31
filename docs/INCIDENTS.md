@@ -105,3 +105,16 @@ Les nouvelles routes utilisent HTTP `PATCH`, absent de la liste des méthodes CO
 ## Correction durable
 
 `PATCH` est désormais autorisé et un test d’intégration vérifie l’action « Marquer comme lu » avec un JWT valide.
+# 2026-08-31 — navigation mobile du header sur deux lignes
+
+## Symptôme
+
+En réduisant la fenêtre, le lien « À propos » passait seul sur une seconde ligne et agrandissait inutilement le header.
+
+## Cause
+
+Le menu authentifié contient cinq actions depuis l’ajout du guide, mais le breakpoint mobile conservait une grille de quatre colonnes.
+
+## Correction durable
+
+La grille mobile possède désormais cinq colonnes flexibles, avec des espacements réduits sous 360 px. Les cinq destinations restent accessibles sur une seule ligne.
