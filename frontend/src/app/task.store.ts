@@ -97,6 +97,9 @@ export class TaskStore {
       dueDate: current.dueDate,
       estimatedMinutes: current.estimatedMinutes ?? null,
       projectId: current.projectId,
+      reminderAt: current.reminderAt ?? null,
+      reminderRepeatMinutes: current.reminderRepeatMinutes ?? null,
+      reminderMaxOccurrences: current.reminderMaxOccurrences ?? null,
     }).subscribe({
       next: (task) => {
         this.replaceTask(task);
@@ -120,6 +123,17 @@ export class TaskStore {
         this.notifications.success('Tâche supprimée avec succès.');
       },
       error: (error: unknown) => this.reportError(error),
+    });
+  }
+
+  markReminderRead(id: number): void {
+    this.api.markReminderRead(id).subscribe({ next: (task) => this.replaceTask(task), error: (error) => this.reportError(error) });
+  }
+
+  snoozeReminder(id: number, minutes: number): void {
+    this.api.snoozeReminder(id, minutes).subscribe({
+      next: (task) => { this.replaceTask(task); this.notifications.success(`Rappel reporté de ${minutes} minutes.`); },
+      error: (error) => this.reportError(error),
     });
   }
 

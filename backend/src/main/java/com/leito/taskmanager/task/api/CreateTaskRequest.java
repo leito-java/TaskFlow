@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /** Corps JSON attendu pour créer une tâche. */
 public record CreateTaskRequest(
@@ -29,7 +30,10 @@ public record CreateTaskRequest(
 
         @Min(value = 5, message = "La durée estimée doit être d'au moins 5 minutes")
         @Max(value = 1440, message = "La durée estimée ne doit pas dépasser 24 heures")
-        Integer estimatedMinutes
+        Integer estimatedMinutes,
+        LocalDateTime reminderAt,
+        @Min(2) @Max(10080) Integer reminderRepeatMinutes,
+        @Min(1) @Max(3) Integer reminderMaxOccurrences
 ) {
     public CreateTaskRequest {
         if (title != null) title = title.trim();

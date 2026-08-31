@@ -30,6 +30,7 @@ export class TaskFormComponent {
   readonly cancelled = output<void>();
   // Mémorise une tentative de soumission pour contrôler l'affichage des erreurs.
   protected readonly submitted = signal(false);
+  protected readonly reminderGuideOpen = signal(false);
   // FormGroup rassemble les champs et leurs règles de validation.
   protected readonly form = new FormGroup({
     // Titre obligatoire, non null et composé d'au moins trois caractères.
@@ -47,6 +48,9 @@ export class TaskFormComponent {
     dueDate: new FormControl('', { nonNullable: true }),
     estimatedMinutes: new FormControl<number | null>(null, { validators: [Validators.min(5), Validators.max(1440)] }),
     projectId: new FormControl<number | null>(null),
+    reminderAt: new FormControl('', { nonNullable: true }),
+    reminderRepeatMinutes: new FormControl<number | null>(null, { validators: [Validators.min(2), Validators.max(10080)] }),
+    reminderMaxOccurrences: new FormControl<number | null>(1, { validators: [Validators.min(1), Validators.max(3)] }),
   });
 
   constructor() {
@@ -66,6 +70,9 @@ export class TaskFormComponent {
           dueDate: task?.dueDate ?? '',
           estimatedMinutes: task?.estimatedMinutes ?? null,
           projectId: task?.projectId ?? null,
+          reminderAt: task?.reminderAt?.slice(0, 16) ?? '',
+          reminderRepeatMinutes: task?.reminderRepeatMinutes ?? null,
+          reminderMaxOccurrences: task?.reminderMaxOccurrences ?? 1,
         });
     });
     this.form.valueChanges.subscribe((value) => {
@@ -78,6 +85,9 @@ export class TaskFormComponent {
         dueDate: value.dueDate ?? '',
         estimatedMinutes: value.estimatedMinutes ?? null,
         projectId: value.projectId ?? null,
+        reminderAt: value.reminderAt ?? '',
+        reminderRepeatMinutes: value.reminderRepeatMinutes ?? null,
+        reminderMaxOccurrences: value.reminderMaxOccurrences ?? 1,
       });
     });
   }
@@ -96,17 +106,20 @@ export class TaskFormComponent {
       description: value.description.trim() || null,
       dueDate: value.dueDate || null,
       projectId: value.projectId,
+      reminderAt: value.reminderAt || null,
+      reminderRepeatMinutes: value.reminderAt ? value.reminderRepeatMinutes : null,
+      reminderMaxOccurrences: value.reminderAt ? value.reminderMaxOccurrences : null,
     });
     // Après une création, prépare le formulaire pour une nouvelle tâche.
     if (!this.task() && !this.onboarding.open()) {
-      this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null });
+      this.form.reset({ title: '', description: '', priority: 'medium', status: 'todo', dueDate: '', estimatedMinutes: null, projectId: null, reminderAt: '', reminderRepeatMinutes: null, reminderMaxOccurrences: 1 });
     }
     // Masque les messages liés à la tentative précédente.
     this.submitted.set(false);
   }
 
   /** Affiche une erreur après visite du champ ou tentative de soumission. */
-  protected shouldShowError(field: 'title' | 'description' | 'estimatedMinutes'): boolean {
+  protected shouldShowError(field: 'title' | 'description' | 'estimatedMinutes' | 'reminderRepeatMinutes' | 'reminderMaxOccurrences'): boolean {
     // Récupère le contrôle demandé.
     const control = this.form.controls[field];
     // Une erreur apparaît seulement si le champ invalide a déjà été utilisé.
@@ -116,5 +129,14 @@ export class TaskFormComponent {
   /** Informe le parent que l'utilisateur abandonne la modification. */
   protected cancel(): void {
     this.cancelled.emit();
+  }
+
+  protected openReminderGuide(): void { this.reminderGuideOpen.set(true); }
+  protected closeReminderGuide(): void {
+    this.reminderGuideOpen.set(false);
+    try { localStorage.setItem('taskflow.reminder-guide.seen', 'true'); } catch { /* Guide limité à la session. */ }
+  }
+  protected shouldSuggestReminderGuide(): boolean {
+    try { return localStorage.getItem('taskflow.reminder-guide.seen') !== 'true'; } catch { return true; }
   }
 }

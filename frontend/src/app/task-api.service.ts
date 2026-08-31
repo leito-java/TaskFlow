@@ -30,4 +30,12 @@ export class TaskApiService {
   deleteTask(id: number): Observable<void> {
     return this.http.delete<void>(`${this.endpoint}/${id}`);
   }
+
+  markReminderRead(id: number): Observable<Task> {
+    return this.http.patch<Task>(`${this.endpoint}/${id}/reminder/read`, {});
+  }
+
+  snoozeReminder(id: number, minutes: number): Observable<Task> {
+    return this.http.patch<Task>(`${this.endpoint}/${id}/reminder/snooze`, { minutes });
+  }
 }

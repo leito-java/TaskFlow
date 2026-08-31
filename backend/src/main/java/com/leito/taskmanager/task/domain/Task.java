@@ -14,6 +14,7 @@ import com.leito.taskmanager.user.domain.User;
 import com.leito.taskmanager.project.domain.Project;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /** Entité persistée dans la table tasks. */
@@ -44,6 +45,18 @@ public class Task {
 
     @Column(name = "estimated_minutes")
     private Integer estimatedMinutes;
+
+    @Column(name = "reminder_at")
+    private LocalDateTime reminderAt;
+
+    @Column(name = "reminder_repeat_minutes")
+    private Integer reminderRepeatMinutes;
+
+    @Column(name = "reminder_max_occurrences")
+    private Integer reminderMaxOccurrences;
+
+    @Column(name = "reminder_read", nullable = false)
+    private boolean reminderRead;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
@@ -118,6 +131,10 @@ public class Task {
         return dueDate;
     }
     public Integer getEstimatedMinutes() { return estimatedMinutes; }
+    public LocalDateTime getReminderAt() { return reminderAt; }
+    public Integer getReminderRepeatMinutes() { return reminderRepeatMinutes; }
+    public Integer getReminderMaxOccurrences() { return reminderMaxOccurrences; }
+    public boolean isReminderRead() { return reminderRead; }
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
 
@@ -136,5 +153,19 @@ public class Task {
         this.status = Objects.requireNonNull(status);
         this.dueDate = dueDate;
         this.estimatedMinutes = estimatedMinutes;
+    }
+
+    public void configureReminder(LocalDateTime reminderAt, Integer repeatMinutes, Integer maxOccurrences) {
+        this.reminderAt = reminderAt;
+        this.reminderRepeatMinutes = reminderAt == null ? null : repeatMinutes;
+        this.reminderMaxOccurrences = reminderAt == null ? null : maxOccurrences;
+        this.reminderRead = false;
+    }
+
+    public void markReminderRead() { this.reminderRead = true; }
+    public void snoozeReminder(int minutes) {
+        if (reminderAt == null) throw new IllegalStateException("Cette tâche ne possède aucun rappel");
+        this.reminderAt = LocalDateTime.now().plusMinutes(minutes);
+        this.reminderRead = false;
     }
 }

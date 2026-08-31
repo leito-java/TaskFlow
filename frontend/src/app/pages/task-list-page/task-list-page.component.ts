@@ -45,6 +45,9 @@ export class TaskListPageComponent {
   });
   protected readonly dailyEstimatedMinutes = computed(() => this.dailyPriorities()
     .reduce((total, priority) => total + (this.taskForPriority(priority.taskId)?.estimatedMinutes ?? 0), 0));
+  protected readonly dueReminders = computed(() => this.store.tasks().filter((task) =>
+    task.status !== 'done' && !task.reminderRead && !!task.reminderAt && new Date(task.reminderAt).getTime() <= Date.now(),
+  ));
 
   constructor() {
     this.store.loadTasks();
@@ -139,6 +142,9 @@ export class TaskListPageComponent {
   protected toggleTask(id: number): void {
     this.store.toggleTask(id, () => this.onboarding.completeStep('task-progress'));
   }
+
+  protected readReminder(id: number): void { this.store.markReminderRead(id); }
+  protected snoozeReminder(id: number, minutes: number): void { this.store.snoozeReminder(id, minutes); }
 
   protected editTask(id: number): void {
     // La navigation construit l'URL dynamique /tasks/:id/edit.

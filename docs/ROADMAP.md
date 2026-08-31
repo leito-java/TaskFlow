@@ -16,6 +16,7 @@
 - [x] projets personnels et filtre par projet ;
 - [x] confirmation de suppression ;
 - [x] notifications de succès et d'erreur ;
+- [x] rappels de tâches dans l’application, reports configurables et mini-guide contextuel ;
 - [x] accessibilité et responsive renforcés ;
 - [x] projets reconnaissables par icône et couleur ;
 - [x] parcours guidé de première utilisation ;
