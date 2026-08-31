@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -172,6 +173,18 @@ class TaskApiIntegrationTest {
                                 """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.fieldErrors.stateConsistent").exists());
+    }
+
+    @Test
+    void markReminderAsReadWithPatch() throws Exception {
+        Task task = new Task("Rappel à lire", TaskPriority.MEDIUM, owner);
+        task.configureReminder(java.time.LocalDateTime.now().minusMinutes(1), 5, 3);
+        task = repository.save(task);
+
+        mockMvc.perform(patch("/api/tasks/{id}/reminder/read", task.getId())
+                        .with(authenticated()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reminderRead").value(true));
     }
 
     private RequestPostProcessor authenticated() {

@@ -92,3 +92,16 @@ Le lanceur CMD ajoutait automatiquement `-WaitForMerge` tout en retransmettant l
 ## Correction durable
 
 Le lanceur transmet désormais uniquement les arguments reçus. Le comportement d’attente est choisi explicitement avec `-WaitForMerge`, ce qui rend également possible une création de PR sans attente.
+# 2026-08-31 — actions des rappels refusées en HTTP 403
+
+## Symptôme
+
+Le rappel apparaissait correctement, mais « Marquer comme lu » et « Reporter » affichaient un refus d’autorisation.
+
+## Cause
+
+Les nouvelles routes utilisent HTTP `PATCH`, absent de la liste des méthodes CORS autorisées.
+
+## Correction durable
+
+`PATCH` est désormais autorisé et un test d’intégration vérifie l’action « Marquer comme lu » avec un JWT valide.
